@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+// NOTE: Using sqlite for local development since the Supabase URL was not provided.
+// To switch to Supabase PostgreSQL:
+// 1. Change provider to "postgresql"
+// 2. Set DATABASE_URL in your .env file to your Supabase string.
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Product {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  default_rate Float
+  active       Boolean  @default(true)
+}
+
+model Bill {
+  id            Int        @id @default(autoincrement())
+  bill_number   String     @unique
+  request_id    String     @unique
+  timestamp     DateTime   @default(now())
+  customer_name String?
+  total_amount  Float
+  status        String     @default("COMPLETED")
+  items         BillItem[]
+}
+
+model BillItem {
+  id           Int    @id @default(autoincrement())
+  bill_id      Int
+  product_name String
+  quantity     Int
+  rate         Float
+  amount       Float
+  bill         Bill   @relation(fields: [bill_id], references: [id])
+}
+
+model SystemConfig {
+  key   String @id
+  value Int    @default(1)
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  timestamp DateTime @default(now())
+  details   String
+}
