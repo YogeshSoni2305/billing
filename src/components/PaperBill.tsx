@@ -57,7 +57,12 @@ export default function PaperBill({ billNumber, date, customerName, items, isMer
                   <div className="p-1 flex items-center justify-center font-medium">{item.quantity} NOS</div>
                   <div className="p-1 px-2 flex items-center uppercase">{item.product_name}</div>
                   <div className="p-1 px-2 flex items-center justify-end font-medium">{item.rate.toFixed(2)}</div>
-                  <div className="p-1 px-2 flex items-center justify-end font-medium">{item.discount || ''}</div>
+                  <div className="p-1 px-2 flex items-center justify-end font-medium">
+                    {item.discount || (() => {
+                      const diff = (item.rate * item.quantity) - item.amount;
+                      return diff > 0 ? (diff / item.quantity).toFixed(2) : '';
+                    })()}
+                  </div>
                   <div className="px-3 flex items-center justify-end font-bold text-[var(--color-text-primary)]">{item.amount.toFixed(2)}</div>
                 </>
               ) : (
