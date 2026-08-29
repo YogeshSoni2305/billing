@@ -143,8 +143,9 @@ export default function NewBill() {
       setCart(Array(MIN_ROWS).fill(null).map(() => ({ ...emptyRow })))
       setCustomerName('')
       setNarration('')
-    } catch (e) {
-      alert("Failed to generate bill. The server might be unreachable.")
+    } catch (e: any) {
+      console.error(e);
+      alert("Failed to generate bill: " + (e.message || "The server might be unreachable. Check Vercel logs."));
     }
     setIsSubmitting(false)
   }
@@ -225,7 +226,7 @@ export default function NewBill() {
                     {idx + 1}
                   </div>
                   <div className="p-1">
-                    <input type="text" id={`input-${idx}-quantity`} className="w-full h-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-[var(--color-primary)] rounded transition-all"
+                    <input type="number" min="1" id={`input-${idx}-quantity`} className="w-full h-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-[var(--color-primary)] rounded transition-all"
                            value={item.quantity} onChange={e => updateItem(idx, 'quantity', e.target.value)} onKeyDown={(e) => handleKeyDown(e, idx, 'quantity')} />
                   </div>
                   <div className="p-1 relative">
@@ -248,11 +249,11 @@ export default function NewBill() {
                     )}
                   </div>
                   <div className="p-1">
-                    <input type="text" id={`input-${idx}-rate`} className="w-full h-full text-right px-2 bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-[var(--color-primary)] rounded transition-all"
+                    <input type="number" step="0.01" min="0" id={`input-${idx}-rate`} className="w-full h-full text-right px-2 bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-[var(--color-primary)] rounded transition-all"
                            value={item.rate} onChange={e => updateItem(idx, 'rate', e.target.value)} onKeyDown={(e) => handleKeyDown(e, idx, 'rate')} />
                   </div>
                   <div className="p-1">
-                    <input type="text" id={`input-${idx}-discount`} className="w-full h-full text-right px-2 bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-[var(--color-primary)] rounded transition-all"
+                    <input type="number" step="0.01" min="0" id={`input-${idx}-discount`} className="w-full h-full text-right px-2 bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-[var(--color-primary)] rounded transition-all"
                            value={item.discount} onChange={e => updateItem(idx, 'discount', e.target.value)} onKeyDown={(e) => handleKeyDown(e, idx, 'discount')} />
                   </div>
                   <div className="px-3 flex items-center justify-end font-bold text-[var(--color-text-primary)]">
