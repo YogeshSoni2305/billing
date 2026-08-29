@@ -37,18 +37,22 @@ export async function getProducts() {
 }
 
 export async function saveProduct(data: { id?: number, name: string, default_rate: number }) {
+  const trimmedName = data.name?.trim() || ""
+  if (!trimmedName) throw new Error("Product name cannot be empty")
+  if (data.default_rate < 0) throw new Error("Default rate cannot be negative")
+
   let actionDetails = ""
   if (data.id) {
     await prisma.product.update({
       where: { id: data.id },
-      data: { name: data.name, default_rate: data.default_rate }
+      data: { name: trimmedName, default_rate: data.default_rate }
     })
-    actionDetails = `Edited product ID ${data.id}: ${data.name} to ₹${data.default_rate}`
+    actionDetails = `Edited product ID ${data.id}: ${trimmedName} to ₹${data.default_rate}`
   } else {
     const created = await prisma.product.create({
-      data: { name: data.name, default_rate: data.default_rate }
+      data: { name: trimmedName, default_rate: data.default_rate }
     })
-    actionDetails = `Added product ID ${created.id}: ${data.name} at ₹${data.default_rate}`
+    actionDetails = `Added product ID ${created.id}: ${trimmedName} at ₹${data.default_rate}`
   }
   await incrementProductVersion()
   await createAuditLog(data.id ? 'PRODUCT_EDITED' : 'PRODUCT_ADDED', actionDetails)
@@ -82,6 +86,10 @@ export async function createBill(data: {
   request_id: string,
   items: { product_name: string, quantity: number, rate?: number, discount?: number }[]
 }) {
+  if (!data.items || data.items.length === 0) {
+    throw new Error("Bill must contain at least one item")
+  }
+
   // Idempotency check: If a bill with this request_id exists, return it immediately.
   const existingBill = await prisma.bill.findUnique({
     where: { request_id: data.request_id },
@@ -154,8 +162,8 @@ export async function cancelBill(id: number) {
 
 // --- Summaries ---
 export async function getDailySummary(dateStr: string) {
-  const start = new Date(`${dateStr}T00:00:00.000Z`)
-  const end = new Date(`${dateStr}T23:59:59.999Z`)
+  const start = new Date(`${dateStr}T00:00:00.000+05:30`)
+  const end = new Date(`${dateStr}T23:59:59.999+05:30`)
 
   const bills = await prisma.bill.findMany({
     where: {
@@ -173,8 +181,10 @@ export async function getDailySummary(dateStr: string) {
 }
 
 export async function getMonthlySummary(year: number, month: number) {
-  const start = new Date(Date.UTC(year, month - 1, 1))
-  const end = new Date(Date.UTC(year, month, 0, 23, 59, 59, 999))
+  const monthStr = month.toString().padStart(2, '0')
+  const lastDay = new Date(year, month, 0).getDate().toString().padStart(2, '0')
+  const start = new Date(`${year}-${monthStr}-01T00:00:00.000+05:30`)
+  const end = new Date(`${year}-${monthStr}-${lastDay}T23:59:59.999+05:30`)
 
   const bills = await prisma.bill.findMany({
     where: {
@@ -185,9 +195,10 @@ export async function getMonthlySummary(year: number, month: number) {
 
   const dailyMap = new Map<string, { bills: number, total: number }>()
   bills.forEach(b => {
-    const dayStr = b.timestamp.toISOString().split('T')[0]
-    const current = dailyMap.get(dayStr) || { bills: 0, total: 0 }
-    dailyMap.set(dayStr, { bills: current.bills + 1, total: current.total + b.total_amount })
+    // Convert UTC to IST before grouping by day
+    const localDateStr = new Date(b.timestamp.getTime() + 5.5 * 60 * 60 * 1000).toISOString().split('T')[0]
+    const current = dailyMap.get(localDateStr) || { bills: 0, total: 0 }
+    dailyMap.set(localDateStr, { bills: current.bills + 1, total: current.total + b.total_amount })
   })
 
   const days = Array.from(dailyMap.entries()).map(([date, data]) => ({
@@ -203,8 +214,8 @@ export async function getMonthlySummary(year: number, month: number) {
 }
 
 export async function getYearlySummary(year: number) {
-  const start = new Date(Date.UTC(year, 0, 1))
-  const end = new Date(Date.UTC(year, 11, 31, 23, 59, 59, 999))
+  const start = new Date(`${year}-01-01T00:00:00.000+05:30`)
+  const end = new Date(`${year}-12-31T23:59:59.999+05:30`)
 
   const bills = await prisma.bill.findMany({
     where: {
@@ -215,9 +226,10 @@ export async function getYearlySummary(year: number) {
 
   const monthlyMap = new Map<string, { bills: number, total: number }>()
   bills.forEach(b => {
-    const monthStr = b.timestamp.toISOString().substring(0, 7) // YYYY-MM
-    const current = monthlyMap.get(monthStr) || { bills: 0, total: 0 }
-    monthlyMap.set(monthStr, { bills: current.bills + 1, total: current.total + b.total_amount })
+    // Convert UTC to IST before grouping by month
+    const localMonthStr = new Date(b.timestamp.getTime() + 5.5 * 60 * 60 * 1000).toISOString().substring(0, 7)
+    const current = monthlyMap.get(localMonthStr) || { bills: 0, total: 0 }
+    monthlyMap.set(localMonthStr, { bills: current.bills + 1, total: current.total + b.total_amount })
   })
 
   const months = Array.from(monthlyMap.entries()).map(([month, data]) => ({

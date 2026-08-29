@@ -24,12 +24,13 @@ export default function ProductsPage() {
       setErrors({ name: 'Product name is required' })
       return
     }
-    if (!formData.default_rate || isNaN(Number(formData.default_rate))) {
-      setErrors({ default_rate: 'Valid rate is required' })
+    const rate = Number(formData.default_rate)
+    if (formData.default_rate === '' || isNaN(rate) || rate < 0) {
+      setErrors({ default_rate: 'Valid positive rate is required' })
       return
     }
     
-    await saveProduct({ id: formData.id || undefined, name: formData.name, default_rate: Number(formData.default_rate) })
+    await saveProduct({ id: formData.id || undefined, name: formData.name, default_rate: rate })
     setModalOpen(false)
     load()
   }

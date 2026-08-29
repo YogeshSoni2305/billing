@@ -48,8 +48,6 @@ export default function NewBill() {
     if (successBill) {
       setTimeout(() => {
         window.print()
-        setSuccessBill(null)
-        setRequestId(crypto.randomUUID())
       }, 100)
     }
   }, [successBill])
@@ -121,7 +119,11 @@ export default function NewBill() {
     }
   }
 
-  const validItems = cart.filter(i => i.product_name && i.quantity && i.rate)
+  const validItems = cart.filter(i => 
+    i.product_name && 
+    parseFloat(i.quantity) > 0 && 
+    parseFloat(i.rate) >= 0
+  )
   const totalProducts = validItems.length
   const grandTotal = validItems.reduce((sum, i) => sum + (i.amount || 0), 0)
 
@@ -152,7 +154,15 @@ export default function NewBill() {
 
   if (successBill) {
     return (
-      <div className="w-full">
+      <div className="w-full flex flex-col items-center">
+        <div className="print:hidden w-full max-w-[800px] flex justify-end gap-4 p-4">
+          <Button onClick={() => window.print()} variant="secondary" className="shadow-sm">
+            <Printer size={16} className="mr-2" /> Print Again
+          </Button>
+          <Button onClick={() => { setSuccessBill(null); setRequestId(crypto.randomUUID()); }} className="shadow-sm">
+            <Plus size={16} className="mr-2" /> New Bill
+          </Button>
+        </div>
         <div className="print:block w-full">
           <PaperBill 
             billNumber={successBill.bill_number}
