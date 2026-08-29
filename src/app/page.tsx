@@ -124,7 +124,7 @@ export default function NewBill() {
     parseFloat(i.quantity) > 0 && 
     parseFloat(i.rate) >= 0
   )
-  const totalProducts = validItems.length
+  const totalQuantity = validItems.reduce((sum, i) => sum + (parseFloat(i.quantity) || 0), 0)
   const grandTotal = validItems.reduce((sum, i) => sum + (i.amount || 0), 0)
 
   const handleSubmit = async () => {
@@ -277,7 +277,7 @@ export default function NewBill() {
           {/* Table Footer */}
           <div className="grid grid-cols-[1fr_160px_100px] border-t border-[var(--color-border)] divide-x divide-[var(--color-border)] h-16 bg-[var(--color-surface)]">
             <div className="p-4 flex items-center justify-end font-medium text-[var(--color-text-secondary)] text-sm">
-              Total Products : <span className="font-bold ml-2 text-[var(--color-text-primary)]">{totalProducts}</span>
+              Total Quantity : <span className="font-bold ml-2 text-[var(--color-text-primary)]">{totalQuantity}</span>
             </div>
             <div className="flex flex-col justify-center px-4 text-xs">
               <div className="text-[var(--color-text-secondary)]">Total Amount</div>

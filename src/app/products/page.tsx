@@ -15,8 +15,14 @@ export default function ProductsPage() {
   const [deleteId, setDeleteId] = useState<number | null>(null)
   const [formData, setFormData] = useState({ id: 0, name: '', default_rate: '' })
   const [errors, setErrors] = useState<any>({})
+  const [loading, setLoading] = useState(true)
 
-  const load = async () => setProducts(await getProductsCached())
+  const load = async () => {
+    setLoading(true)
+    setProducts(await getProductsCached())
+    setLoading(false)
+  }
+  
   useEffect(() => { load() }, [])
 
   const handleSave = async () => {
@@ -92,7 +98,17 @@ export default function ProductsPage() {
                   </td>
                 </tr>
               ))}
-              {filtered.length === 0 && (
+              {loading && (
+                <tr>
+                  <td colSpan={3} className="p-8 text-center">
+                    <div className="flex items-center justify-center text-[var(--color-text-secondary)]">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[var(--color-primary)]"></div>
+                      <span className="ml-3 font-medium">Loading products...</span>
+                    </div>
+                  </td>
+                </tr>
+              )}
+              {!loading && filtered.length === 0 && (
                 <tr>
                   <td colSpan={3} className="p-8 text-center text-[var(--color-text-secondary)]">
                     No products found.

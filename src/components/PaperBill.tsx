@@ -8,11 +8,12 @@ export default function PaperBill({ billNumber, date, customerName, items, isMer
     displayItems.push({ _empty: true })
   }
 
+  const totalQuantity = (items || []).reduce((sum: number, i: any) => sum + (Number(i.quantity) || 0), 0)
   const grandTotal = (items || []).reduce((sum: number, i: any) => sum + i.amount, 0)
 
   return (
     <div className="w-full bg-white border border-[var(--color-border)] rounded-xl p-10 font-sans text-sm text-[var(--color-text-primary)] relative mx-auto">
-      <div className="absolute top-10 right-10 text-[10px] font-bold text-slate-400 border border-slate-300 px-2 py-1 uppercase rounded-sm">
+      <div className="absolute top-10 right-10 text-[10px] font-bold text-slate-400 border border-slate-300 px-2 py-1 uppercase rounded-sm print:hidden">
         {isMerchant ? 'Merchant Copy' : 'Customer Copy'}
       </div>
       
@@ -70,7 +71,7 @@ export default function PaperBill({ billNumber, date, customerName, items, isMer
 
         <div className="grid grid-cols-[1fr_160px_100px] border-t border-[var(--color-border)] divide-x divide-[var(--color-border)] h-16 bg-[var(--color-surface)]">
           <div className="p-4 flex items-center justify-end font-medium text-[var(--color-text-secondary)] text-sm">
-            Total Products : <span className="font-bold ml-2 text-[var(--color-text-primary)]">{items?.length || 0}</span>
+            Total Quantity : <span className="font-bold ml-2 text-[var(--color-text-primary)]">{totalQuantity}</span>
           </div>
           <div className="flex flex-col justify-center px-4 text-xs">
             <div className="text-[var(--color-text-secondary)]">Total Amount</div>

@@ -12,9 +12,14 @@ export default function DailySummary() {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [summary, setSummary] = useState<any>(null)
   const [viewingBill, setViewingBill] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    getDailySummary(date).then(setSummary)
+    setLoading(true)
+    getDailySummary(date).then(res => {
+      setSummary(res)
+      setLoading(false)
+    })
   }, [date])
 
   return (
@@ -31,7 +36,12 @@ export default function DailySummary() {
         </div>
       </div>
 
-      {summary && (
+      {loading ? (
+        <div className="flex-1 flex items-center justify-center text-[var(--color-text-secondary)]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-primary)]"></div>
+          <span className="ml-3 font-medium">Loading summary...</span>
+        </div>
+      ) : summary && (
         <>
           <div className="grid grid-cols-2 gap-6 shrink-0">
             <div className="bg-white p-6 rounded-xl shadow-sm border border-[var(--color-border)]">

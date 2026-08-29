@@ -190,22 +190,21 @@ export async function getMonthlySummary(year: number, month: number) {
     where: {
       timestamp: { gte: start, lte: end },
       status: 'COMPLETED'
-    }
+    },
+    include: { items: true }
   })
 
-  const dailyMap = new Map<string, { bills: number, total: number }>()
+  const dailyMap = new Map<string, { date: string, bills: any[], total: number }>()
   bills.forEach(b => {
     // Convert UTC to IST before grouping by day
     const localDateStr = new Date(b.timestamp.getTime() + 5.5 * 60 * 60 * 1000).toISOString().split('T')[0]
-    const current = dailyMap.get(localDateStr) || { bills: 0, total: 0 }
-    dailyMap.set(localDateStr, { bills: current.bills + 1, total: current.total + b.total_amount })
+    const current = dailyMap.get(localDateStr) || { date: localDateStr, bills: [], total: 0 }
+    current.bills.push(b)
+    current.total += b.total_amount
+    dailyMap.set(localDateStr, current)
   })
 
-  const days = Array.from(dailyMap.entries()).map(([date, data]) => ({
-    date,
-    bills: data.bills,
-    total: data.total
-  })).sort((a, b) => a.date.localeCompare(b.date))
+  const days = Array.from(dailyMap.values()).sort((a, b) => b.date.localeCompare(a.date))
 
   const total_bills = bills.length
   const monthly_total = bills.reduce((sum, b) => sum + b.total_amount, 0)
