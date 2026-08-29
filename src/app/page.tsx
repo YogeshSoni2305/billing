@@ -7,7 +7,7 @@ import { Printer, CheckCircle, Plus, Trash2 } from 'lucide-react'
 import PaperBill from '@/components/PaperBill'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { GaneshaIcon } from '@/components/GaneshaIcon'
+import Image from 'next/image'
 
 // The Print layout uses the exact same UI as the editor, 
 // so we don't need a massive separate PrintLayout component anymore.
@@ -169,7 +169,7 @@ export default function NewBill() {
   const currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-')
 
   return (
-    <div className="h-full w-full overflow-auto bg-[var(--color-surface)] flex flex-col items-center py-8 print:hidden relative">
+    <div className="h-full w-full overflow-auto bg-[var(--color-surface)] flex flex-col items-center p-4 print:p-0 print:hidden relative">
       
       <div className="fixed bottom-8 right-8 flex flex-col gap-4 z-10">
         <Button id="submit-bill" onClick={handleSubmit} disabled={isSubmitting || validItems.length === 0} size="lg" className="rounded-full shadow-xl text-lg px-8 py-6 h-auto">
@@ -177,10 +177,10 @@ export default function NewBill() {
         </Button>
       </div>
 
-      <div className="bg-white w-[800px] shadow-xl border border-[var(--color-border)] rounded-xl p-10 font-sans text-sm text-[var(--color-text-primary)] relative">
+      <div className="bg-white w-full shadow-xl border border-[var(--color-border)] rounded-xl p-6 md:p-10 font-sans text-sm text-[var(--color-text-primary)] relative">
         
         <div className="text-center mb-8 flex flex-col items-center">
-          <GaneshaIcon size="60px" />
+          <Image src="/ganesha.png" alt="Ganesha" width={60} height={60} priority />
           <h2 className="font-bold text-xl leading-tight mt-2">Quotation</h2>
           <h3 className="uppercase tracking-widest text-sm text-[var(--color-text-secondary)]">INVOICE</h3>
           <h1 className="font-bold text-2xl tracking-wide mt-2 text-blue-900">SAGAR ELECTRICALS</h1>

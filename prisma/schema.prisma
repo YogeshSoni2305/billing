@@ -2,13 +2,9 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// NOTE: Using sqlite for local development since the Supabase URL was not provided.
-// To switch to Supabase PostgreSQL:
-// 1. Change provider to "postgresql"
-// 2. Set DATABASE_URL in your .env file to your Supabase string.
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Product {

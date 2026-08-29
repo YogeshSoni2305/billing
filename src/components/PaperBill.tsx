@@ -1,4 +1,4 @@
-import { GaneshaIcon } from './GaneshaIcon'
+import Image from 'next/image'
 
 export default function PaperBill({ billNumber, date, customerName, items, isMerchant, narration }: any) {
   
@@ -11,13 +11,13 @@ export default function PaperBill({ billNumber, date, customerName, items, isMer
   const grandTotal = (items || []).reduce((sum: number, i: any) => sum + i.amount, 0)
 
   return (
-    <div className="w-[800px] bg-white border border-[var(--color-border)] rounded-xl p-10 font-sans text-sm text-[var(--color-text-primary)] relative mx-auto">
+    <div className="w-full bg-white border border-[var(--color-border)] rounded-xl p-10 font-sans text-sm text-[var(--color-text-primary)] relative mx-auto">
       <div className="absolute top-10 right-10 text-[10px] font-bold text-slate-400 border border-slate-300 px-2 py-1 uppercase rounded-sm">
         {isMerchant ? 'Merchant Copy' : 'Customer Copy'}
       </div>
       
       <div className="text-center mb-8 flex flex-col items-center">
-        <GaneshaIcon size="60px" />
+        <Image src="/ganesha.png" alt="Ganesha" width={60} height={60} priority />
         <h2 className="font-bold text-xl leading-tight mt-2">Quotation</h2>
         <h3 className="uppercase tracking-widest text-sm text-[var(--color-text-secondary)]">INVOICE</h3>
         <h1 className="font-bold text-2xl tracking-wide mt-2 text-blue-900">SAGAR ELECTRICALS</h1>
