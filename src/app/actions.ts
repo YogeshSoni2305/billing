@@ -2,8 +2,13 @@
 
 import { PrismaClient } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { signJWT, verifyJWT, hashPassword, verifyPassword, AUTH_COOKIE_NAME } from '@/lib/auth'
 
-const prisma = new PrismaClient()
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
+const prisma = globalForPrisma.prisma || new PrismaClient()
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 // --- Product Cache Versioning ---
 export async function getProductVersion() {
@@ -81,10 +86,20 @@ export async function getNextBillNumber() {
   return `SE-${String(nextId).padStart(6, '0')}`
 }
 
+function parseDiscount(discStr: string, rate: number) {
+  const s = String(discStr || "").trim()
+  if (s.endsWith('%')) {
+    const p = parseFloat(s.replace('%', '')) || 0
+    return rate * (p / 100)
+  }
+  return parseFloat(s) || 0
+}
+
 export async function createBill(data: {
   customer_name?: string,
+  customer_mobile?: string,
   request_id: string,
-  items: { product_name: string, quantity: number, rate?: number, discount?: number }[]
+  items: { product_name: string, quantity: number, rate?: number, discount?: string }[]
 }) {
   if (!data.items || data.items.length === 0) {
     throw new Error("Bill must contain at least one item")
@@ -103,12 +118,13 @@ export async function createBill(data: {
   const calculatedItems = data.items.map(item => {
     if (item.quantity <= 0) throw new Error("Quantity must be positive")
     const safeRate = Math.max(0, item.rate || 0) 
-    const safeDisc = Math.max(0, item.discount || 0)
-    const amount = item.quantity * Math.max(0, safeRate - safeDisc)
+    const discountVal = parseDiscount(item.discount || "", safeRate)
+    const amount = item.quantity * Math.max(0, safeRate - discountVal)
     return {
       product_name: item.product_name,
       quantity: item.quantity,
       rate: safeRate,
+      discount: item.discount || "",
       amount
     }
   })
@@ -125,6 +141,7 @@ export async function createBill(data: {
         bill_number: `TEMP-${data.request_id}`,
         request_id: data.request_id,
         customer_name: data.customer_name || null,
+        customer_mobile: data.customer_mobile || null,
         total_amount,
         items: {
           create: calculatedItems
@@ -139,6 +156,9 @@ export async function createBill(data: {
       data: { bill_number: finalBillNumber },
       include: { items: true }
     })
+  }, {
+    maxWait: 5000,
+    timeout: 10000
   })
 
   await createAuditLog('BILL_CREATED', `Created bill ${result.bill_number} for ₹${result.total_amount}`)
@@ -241,4 +261,109 @@ export async function getYearlySummary(year: number) {
   const yearly_total = bills.reduce((sum, b) => sum + b.total_amount, 0)
 
   return { year, months, total_bills, yearly_total }
+}
+
+export async function getCustomerHistory(query: string) {
+  if (!query) return []
+  
+  const bills = await prisma.bill.findMany({
+    where: {
+      OR: [
+        { customer_name: { contains: query, mode: 'insensitive' } },
+        { customer_mobile: { contains: query } }
+      ]
+    },
+    include: { items: true },
+    orderBy: { timestamp: 'desc' }
+  })
+  
+  return bills
+}
+
+// --- Authentication Actions ---
+
+function getPrisma() {
+  if (globalForPrisma.prisma && (globalForPrisma.prisma as any).user) {
+    return globalForPrisma.prisma
+  }
+  const client = new PrismaClient()
+  if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = client
+  return client
+}
+
+export async function ensureDefaultAdminUser() {
+  const db = getPrisma()
+  const count = await db.user.count()
+  if (count === 0) {
+    const passwordHash = await hashPassword('admin123')
+    await db.user.create({
+      data: {
+        username: 'admin',
+        passwordHash,
+        name: 'Admin User',
+        role: 'ADMIN'
+      }
+    })
+    console.log('Default admin user created: admin / admin123')
+  }
+}
+
+export async function loginUser(prevState: any, formData: FormData) {
+  const username = formData.get('username') as string
+  const password = formData.get('password') as string
+
+  if (!username || !password) {
+    return { success: false, error: 'Username and password are required' }
+  }
+
+  await ensureDefaultAdminUser()
+
+  const db = getPrisma()
+  const user = await db.user.findUnique({
+    where: { username: username.trim() }
+  })
+
+  if (!user) {
+    return { success: false, error: 'Invalid username or password' }
+  }
+
+  const isValidPassword = await verifyPassword(password, user.passwordHash)
+  if (!isValidPassword) {
+    return { success: false, error: 'Invalid username or password' }
+  }
+
+  const token = await signJWT({
+    userId: user.id,
+    username: user.username,
+    name: user.name || user.username,
+    role: user.role
+  })
+
+  const cookieStore = await cookies()
+  cookieStore.set(AUTH_COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 // 24 hours
+  })
+
+  return { success: true, error: null }
+}
+
+export async function logoutUser() {
+  const cookieStore = await cookies()
+  cookieStore.delete(AUTH_COOKIE_NAME)
+  redirect('/login')
+}
+
+export async function getCurrentUser() {
+  try {
+    const cookieStore = await cookies()
+    const token = cookieStore.get(AUTH_COOKIE_NAME)?.value
+    if (!token) return null
+    return await verifyJWT(token)
+  } catch (error) {
+    return null
+  }
 }

@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-export default function PaperBill({ billNumber, date, customerName, items, isMerchant, narration }: any) {
+export default function PaperBill({ billNumber, date, customerName, customerMobile, storeName = 'SAGAR ELECTRICALS', items, isMerchant, narration }: any) {
   
   const MIN_ROWS = 12
   const displayItems = [...(items || [])]
@@ -21,7 +21,7 @@ export default function PaperBill({ billNumber, date, customerName, items, isMer
         <Image src="/ganesha.png" alt="Ganesha" width={60} height={60} priority />
         <h2 className="font-bold text-xl leading-tight mt-2">Quotation</h2>
         <h3 className="uppercase tracking-widest text-sm text-[var(--color-text-secondary)]">INVOICE</h3>
-        <h1 className="font-bold text-2xl tracking-wide mt-2 text-blue-900">SAGAR ELECTRICALS</h1>
+        {storeName && <h1 className="font-bold text-2xl tracking-wide mt-2 text-blue-900">{storeName}</h1>}
       </div>
 
       <div className="flex justify-between font-semibold mb-6 text-sm">
@@ -29,11 +29,21 @@ export default function PaperBill({ billNumber, date, customerName, items, isMer
         <div>Date: <span className="font-normal text-[var(--color-text-secondary)]">{date}</span></div>
       </div>
 
-      <div className="flex items-center gap-4 mb-8">
-        <div className="font-semibold text-sm w-12 pt-2">M/s:</div>
-        <div className="flex-1">
-          <div className="w-full rounded-md border border-[var(--color-border)] bg-white px-3 py-2 text-sm text-[var(--color-text-primary)] min-h-[38px] flex items-center">
-            {isMerchant && customerName ? customerName : <span className="text-slate-300"></span>}
+      <div className="grid grid-cols-2 gap-8 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="font-semibold text-sm w-12 pt-2">M/s:</div>
+          <div className="flex-1">
+            <div className="w-full rounded-md border border-[var(--color-border)] bg-white px-3 py-2 text-sm text-[var(--color-text-primary)] min-h-[38px] flex items-center">
+              {isMerchant && customerName ? customerName : <span className="text-slate-300"></span>}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="font-semibold text-sm w-20 pt-2">Mobile:</div>
+          <div className="flex-1">
+            <div className="w-full rounded-md border border-[var(--color-border)] bg-white px-3 py-2 text-sm text-[var(--color-text-primary)] min-h-[38px] flex items-center">
+              {isMerchant && customerMobile ? customerMobile : <span className="text-slate-300"></span>}
+            </div>
           </div>
         </div>
       </div>

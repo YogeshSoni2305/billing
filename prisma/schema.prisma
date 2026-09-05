@@ -19,10 +19,11 @@ model Bill {
   id            Int        @id @default(autoincrement())
   bill_number   String     @unique
   request_id    String     @unique
-  timestamp     DateTime   @default(now())
-  customer_name String?
-  total_amount  Float
-  status        String     @default("COMPLETED")
+  timestamp       DateTime   @default(now())
+  customer_name   String?
+  customer_mobile String?
+  total_amount    Float
+  status          String     @default("COMPLETED")
   items         BillItem[]
 }
 
@@ -32,6 +33,7 @@ model BillItem {
   product_name String
   quantity     Int
   rate         Float
+  discount     String @default("")
   amount       Float
   bill         Bill   @relation(fields: [bill_id], references: [id])
 }
@@ -47,3 +49,13 @@ model AuditLog {
   timestamp DateTime @default(now())
   details   String
 }
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String
+  name         String?
+  role         String   @default("ADMIN")
+  createdAt    DateTime @default(now())
+}
+

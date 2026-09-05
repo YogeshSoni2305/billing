@@ -17,6 +17,8 @@ export default function NewBill() {
   const [products, setProducts] = useState<any[]>([])
   
   const [customerName, setCustomerName] = useState('')
+  const [customerMobile, setCustomerMobile] = useState('')
+  const [showStoreName, setShowStoreName] = useState(true)
   const [narration, setNarration] = useState('')
   
   const MIN_ROWS = 12
@@ -133,17 +135,19 @@ export default function NewBill() {
     try {
       const res = await createBill({ 
         customer_name: customerName, 
+        customer_mobile: customerMobile,
         request_id: requestId,
         items: validItems.map(i => ({
           product_name: i.product_name,
           quantity: parseFloat(i.quantity) || 1,
           rate: parseFloat(i.rate) || 0,
-          discount: parseDiscount(i.discount, parseFloat(i.rate) || 0)
+          discount: String(i.discount || '')
         }))
       })
       setSuccessBill(res)
       setCart(Array(MIN_ROWS).fill(null).map(() => ({ ...emptyRow })))
       setCustomerName('')
+      setCustomerMobile('')
       setNarration('')
     } catch (e: any) {
       console.error(e);
@@ -168,6 +172,8 @@ export default function NewBill() {
             billNumber={successBill.bill_number}
             date={new Date(successBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-')}
             customerName={successBill.customer_name} 
+            customerMobile={successBill.customer_mobile}
+            storeName={showStoreName ? 'SAGAR ELECTRICALS' : ''}
             items={successBill.items}
             isMerchant={true} 
             narration={narration}
@@ -194,7 +200,20 @@ export default function NewBill() {
           <Image src="/ganesha.png" alt="Ganesha" width={60} height={60} priority />
           <h2 className="font-bold text-xl leading-tight mt-2">Quotation</h2>
           <h3 className="uppercase tracking-widest text-sm text-[var(--color-text-secondary)]">INVOICE</h3>
-          <h1 className="font-bold text-2xl tracking-wide mt-2 text-blue-900">SAGAR ELECTRICALS</h1>
+          {showStoreName && <h1 className="font-bold text-2xl tracking-wide mt-2 text-blue-900">SAGAR ELECTRICALS</h1>}
+          
+          <div className="mt-4 print:hidden flex items-center gap-2">
+            <input 
+              type="checkbox" 
+              id="toggle-store-name"
+              checked={showStoreName}
+              onChange={e => setShowStoreName(e.target.checked)}
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label htmlFor="toggle-store-name" className="text-sm text-gray-600 font-medium cursor-pointer">
+              Print Store Name
+            </label>
+          </div>
         </div>
 
         <div className="flex justify-between font-semibold mb-6 text-sm">
@@ -202,14 +221,26 @@ export default function NewBill() {
           <div>Date: <span className="font-normal text-[var(--color-text-secondary)]">{currentDate}</span></div>
         </div>
 
-        <div className="flex items-center gap-4 mb-8">
-          <div className="font-semibold text-sm w-12 pt-2">M/s:</div>
-          <div className="flex-1">
-            <Input 
-              placeholder="Type customer name..."
-              value={customerName}
-              onChange={e => setCustomerName(e.target.value)}
-            />
+        <div className="grid grid-cols-2 gap-8 mb-8">
+          <div className="flex items-center gap-4">
+            <div className="font-semibold text-sm w-12 pt-2">M/s:</div>
+            <div className="flex-1">
+              <Input 
+                placeholder="Type customer name..."
+                value={customerName}
+                onChange={e => setCustomerName(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="font-semibold text-sm w-20 pt-2">Mobile:</div>
+            <div className="flex-1">
+              <Input 
+                placeholder="Type customer mobile..."
+                value={customerMobile}
+                onChange={e => setCustomerMobile(e.target.value)}
+              />
+            </div>
           </div>
         </div>
 
