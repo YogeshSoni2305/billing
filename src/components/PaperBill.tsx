@@ -11,6 +11,19 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
   const totalQuantity = (items || []).length
   const grandTotal = (items || []).reduce((sum: number, i: any) => sum + i.amount, 0)
 
+  const hasDiscount = (items || []).some((item: any) => {
+    if (item.discount) return true;
+    if (item.rate && item.quantity && item.amount) {
+      const diff = (item.rate * item.quantity) - item.amount;
+      return diff > 0;
+    }
+    return false;
+  })
+
+  const gridColsClass = hasDiscount 
+    ? "grid-cols-[80px_1fr_80px_60px_100px]" 
+    : "grid-cols-[80px_1fr_80px_100px]"
+
   return (
     <div className="w-full bg-white border border-[var(--color-border)] rounded-xl p-10 font-sans text-sm text-[var(--color-text-primary)] relative mx-auto">
       <div className="absolute top-10 right-10 text-[10px] font-bold text-slate-400 border border-slate-300 px-2 py-1 uppercase rounded-sm print:hidden">
@@ -49,33 +62,35 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
       </div>
 
       <div className="border border-[var(--color-border)] rounded-lg overflow-hidden">
-        <div className="grid grid-cols-[80px_1fr_80px_60px_100px] bg-[var(--color-surface)] border-b border-[var(--color-border)] font-semibold text-center divide-x divide-[var(--color-border)] py-3 text-xs uppercase tracking-wider text-[var(--color-text-secondary)]">
+        <div className={`grid ${gridColsClass} bg-[var(--color-surface)] border-b border-[var(--color-border)] font-semibold text-center divide-x divide-[var(--color-border)] py-3 text-xs uppercase tracking-wider text-[var(--color-text-secondary)]`}>
           <div>Qty</div>
           <div>DESCRIPTION OF GOODS</div>
           <div>Rate</div>
-          <div>Disc</div>
+          {hasDiscount && <div>Disc</div>}
           <div>Amount</div>
         </div>
 
         <div className="flex flex-col min-h-[400px] divide-y divide-[var(--color-border)]">
           {displayItems.map((item, idx) => (
-            <div key={idx} className="grid grid-cols-[80px_1fr_80px_60px_100px] divide-x divide-[var(--color-border)] h-10">
+            <div key={idx} className={`grid ${gridColsClass} divide-x divide-[var(--color-border)] h-10`}>
               {!item._empty ? (
                 <>
                   <div className="p-1 flex items-center justify-center font-medium">{item.quantity} NOS</div>
                   <div className="p-1 px-2 flex items-center uppercase">{item.product_name}</div>
                   <div className="p-1 px-2 flex items-center justify-end font-medium">{item.rate.toFixed(2)}</div>
-                  <div className="p-1 px-2 flex items-center justify-end font-medium">
-                    {item.discount || (() => {
-                      const diff = (item.rate * item.quantity) - item.amount;
-                      return diff > 0 ? (diff / item.quantity).toFixed(2) : '';
-                    })()}
-                  </div>
+                  {hasDiscount && (
+                    <div className="p-1 px-2 flex items-center justify-end font-medium">
+                      {item.discount || (() => {
+                        const diff = (item.rate * item.quantity) - item.amount;
+                        return diff > 0 ? (diff / item.quantity).toFixed(2) : '';
+                      })()}
+                    </div>
+                  )}
                   <div className="px-3 flex items-center justify-end font-bold text-[var(--color-text-primary)]">{item.amount.toFixed(2)}</div>
                 </>
               ) : (
                 <>
-                  <div></div><div></div><div></div><div></div><div></div>
+                  <div></div><div></div><div></div>{hasDiscount && <div></div>}<div></div>
                 </>
               )}
             </div>
