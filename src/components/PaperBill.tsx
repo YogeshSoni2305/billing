@@ -8,7 +8,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
     displayItems.push({ _empty: true })
   }
 
-  const totalQuantity = (items || []).reduce((sum: number, i: any) => sum + (Number(i.quantity) || 0), 0)
+  const totalQuantity = (items || []).length
   const grandTotal = (items || []).reduce((sum: number, i: any) => sum + i.amount, 0)
 
   return (
@@ -49,8 +49,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
       </div>
 
       <div className="border border-[var(--color-border)] rounded-lg overflow-hidden">
-        <div className="grid grid-cols-[40px_80px_1fr_80px_60px_100px] bg-[var(--color-surface)] border-b border-[var(--color-border)] font-semibold text-center divide-x divide-[var(--color-border)] py-3 text-xs uppercase tracking-wider text-[var(--color-text-secondary)]">
-          <div>S.No.</div>
+        <div className="grid grid-cols-[80px_1fr_80px_60px_100px] bg-[var(--color-surface)] border-b border-[var(--color-border)] font-semibold text-center divide-x divide-[var(--color-border)] py-3 text-xs uppercase tracking-wider text-[var(--color-text-secondary)]">
           <div>Qty</div>
           <div>DESCRIPTION OF GOODS</div>
           <div>Rate</div>
@@ -60,10 +59,9 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
 
         <div className="flex flex-col min-h-[400px] divide-y divide-[var(--color-border)]">
           {displayItems.map((item, idx) => (
-            <div key={idx} className="grid grid-cols-[40px_80px_1fr_80px_60px_100px] divide-x divide-[var(--color-border)] h-10">
+            <div key={idx} className="grid grid-cols-[80px_1fr_80px_60px_100px] divide-x divide-[var(--color-border)] h-10">
               {!item._empty ? (
                 <>
-                  <div className="flex items-center justify-center text-[var(--color-text-secondary)] font-medium text-xs">{idx + 1}</div>
                   <div className="p-1 flex items-center justify-center font-medium">{item.quantity} NOS</div>
                   <div className="p-1 px-2 flex items-center uppercase">{item.product_name}</div>
                   <div className="p-1 px-2 flex items-center justify-end font-medium">{item.rate.toFixed(2)}</div>
@@ -77,7 +75,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
                 </>
               ) : (
                 <>
-                  <div></div><div></div><div></div><div></div><div></div><div></div>
+                  <div></div><div></div><div></div><div></div><div></div>
                 </>
               )}
             </div>

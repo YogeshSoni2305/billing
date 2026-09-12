@@ -126,7 +126,7 @@ export default function NewBill() {
     parseFloat(i.quantity) > 0 && 
     parseFloat(i.rate) >= 0
   )
-  const totalQuantity = validItems.reduce((sum, i) => sum + (parseFloat(i.quantity) || 0), 0)
+  const totalQuantity = validItems.length
   const grandTotal = validItems.reduce((sum, i) => sum + (i.amount || 0), 0)
 
   const handleSubmit = async () => {
@@ -245,8 +245,7 @@ export default function NewBill() {
         </div>
 
         <div className="border border-[var(--color-border)] rounded-lg overflow-hidden">
-          <div className="grid grid-cols-[40px_80px_1fr_80px_60px_100px] bg-[var(--color-surface)] border-b border-[var(--color-border)] font-semibold text-center divide-x divide-[var(--color-border)] py-3 text-xs uppercase tracking-wider text-[var(--color-text-secondary)]">
-            <div>S.No.</div>
+          <div className="grid grid-cols-[80px_1fr_80px_60px_100px] bg-[var(--color-surface)] border-b border-[var(--color-border)] font-semibold text-center divide-x divide-[var(--color-border)] py-3 text-xs uppercase tracking-wider text-[var(--color-text-secondary)]">
             <div>Qty</div>
             <div>DESCRIPTION OF GOODS</div>
             <div>Rate</div>
@@ -257,14 +256,10 @@ export default function NewBill() {
           <div className="flex flex-col relative min-h-[400px] divide-y divide-[var(--color-border)]">
             {cart.map((item, idx) => {
               return (
-                <div key={idx} className="grid grid-cols-[40px_80px_1fr_80px_60px_100px] divide-x divide-[var(--color-border)] h-10 group relative transition-colors hover:bg-slate-50">
+                <div key={idx} className="grid grid-cols-[80px_1fr_80px_60px_100px] divide-x divide-[var(--color-border)] h-10 group relative transition-colors hover:bg-slate-50">
                   
                   <div className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button onClick={() => removeRow(idx)} className="text-[var(--color-error)] hover:bg-red-50 p-1.5 rounded-md transition-colors"><Trash2 size={16} /></button>
-                  </div>
-
-                  <div className="flex items-center justify-center text-[var(--color-text-secondary)] font-medium text-xs">
-                    {idx + 1}
                   </div>
                   <div className="p-1">
                     <input type="number" min="1" id={`input-${idx}-quantity`} className="w-full h-full text-center bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-[var(--color-primary)] rounded transition-all"
@@ -294,7 +289,7 @@ export default function NewBill() {
                            value={item.rate} onChange={e => updateItem(idx, 'rate', e.target.value)} onKeyDown={(e) => handleKeyDown(e, idx, 'rate')} />
                   </div>
                   <div className="p-1">
-                    <input type="number" step="0.01" min="0" id={`input-${idx}-discount`} className="w-full h-full text-right px-2 bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-[var(--color-primary)] rounded transition-all"
+                    <input type="text" id={`input-${idx}-discount`} className="w-full h-full text-right px-2 bg-transparent outline-none focus:bg-white focus:ring-2 focus:ring-[var(--color-primary)] rounded transition-all"
                            value={item.discount} onChange={e => updateItem(idx, 'discount', e.target.value)} onKeyDown={(e) => handleKeyDown(e, idx, 'discount')} />
                   </div>
                   <div className="px-3 flex items-center justify-end font-bold text-[var(--color-text-primary)]">

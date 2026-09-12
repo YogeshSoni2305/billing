@@ -8,8 +8,8 @@ import { Lock, User, LogIn, AlertCircle } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
-  const [username, setUsername] = useState('admin')
-  const [password, setPassword] = useState('admin123')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -124,13 +124,7 @@ export default function LoginPage() {
             </div>
           </form>
 
-          {/* Default Credentials Info Box */}
-          <div className="mt-8 p-3.5 rounded-xl bg-amber-50/80 border border-amber-200/60 text-xs text-slate-600 text-center">
-            <span className="font-semibold text-slate-700">Default Admin Credentials:</span>
-            <div className="mt-1 font-mono text-slate-800 bg-white/80 py-1 px-2 rounded border border-amber-200 inline-block">
-              Username: <span className="font-bold">admin</span> | Password: <span className="font-bold">admin123</span>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>
