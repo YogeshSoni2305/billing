@@ -25,9 +25,9 @@
 }
 
 @media print {
-  @page { margin: 0; size: A4; }
+  @page { margin: 0; size: A6 portrait; }
   body { 
-    margin: 1cm;
+    margin: 5mm;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
