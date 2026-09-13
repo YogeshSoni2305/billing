@@ -1,33 +1,28 @@
 import Image from 'next/image'
 
 export default function PaperBill({ billNumber, date, customerName, customerMobile, storeName = 'SAGAR ELECTRICALS', items, isMerchant, narration }: any) {
-  
-  // ─── GEOMETRY (all in px, A6 = 396 × 561) ─────────────────────────────────
-  // Page padding
-  const PX = 12  // horizontal
-  const PY = 8   // vertical top + bottom
+  // ─── GEOMETRY (all in px, A6 = 397 × 560 max) ──────────────────────────────
+  const PX = 10  // horizontal padding
+  const PY = 6   // vertical top + bottom padding
 
-  // Section heights (fixed, pixel-perfect)
-  const HEADER_H    = 52   // logo + Quotation + INVOICE + store name
-  const META_H      = 14   // No. / Date row
-  const CUSTOMER_H  = 28   // M/s + Mobile
-  const TBL_HEAD_H  = 16   // column labels
-  const TBL_FOOT_H  = 22   // Total qty / Net amount
-  const NOTE_H      = 14   // Note row
+  const HEADER_H   = 50   // logo + store header
+  const META_H     = 14   // No. / Date row
+  const CUSTOMER_H = 26   // M/s + Mobile
+  const TBL_HEAD_H = 16   // column labels
+  const TBL_FOOT_H = 22   // Total qty / Net amount
+  const NOTE_H     = 14   // Note row
 
-  // Fixed gaps between sections
-  const G1 = 4  // after header
-  const G2 = 3  // after meta
-  const G3 = 3  // after customer
-  const G4 = 3  // between table and note
+  const G1 = 3  // after header
+  const G2 = 2  // after meta
+  const G3 = 2  // after customer
+  const G4 = 2  // between table and note
 
-  // Calculate remaining height for rows
+  const MIN_ROWS = 15
   const usedPx = PY + HEADER_H + G1 + META_H + G2 + CUSTOMER_H + G3
-               + TBL_HEAD_H + TBL_FOOT_H + G4 + NOTE_H + PY + 2  // +2 for outer borders
-  const availableForRows = 561 - usedPx
-  const ROW_H = Math.floor(availableForRows / 18)  // distribute evenly
+               + TBL_HEAD_H + TBL_FOOT_H + G4 + NOTE_H + PY + 2
+  const availableForRows = 525 - usedPx
+  const ROW_H = Math.floor(availableForRows / MIN_ROWS) // ~21px
 
-  const MIN_ROWS = 18
   const displayItems = [...(items || [])]
   while (displayItems.length < MIN_ROWS) displayItems.push({ _empty: true })
 
@@ -41,7 +36,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
     return false
   })
 
-  // Column widths (must sum to 396 - 2*PX = 372 px)
+  // Column widths
   const cols = hasDiscount
     ? { qty: 32, desc: undefined, rate: 50, disc: 40, amt: 58 }
     : { qty: 32, desc: undefined, rate: 56, disc: 0,  amt: 64 }
@@ -59,8 +54,10 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
 
   return (
     <div className="bill-page" style={{
-      width: 397,
-      height: 560,
+      width: '100%',
+      maxWidth: 397,
+      height: 545,
+      maxHeight: 550,
       background: '#fff',
       color: '#0f172a',
       fontFamily: FONT,
@@ -71,6 +68,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
       padding: `${PY}px ${PX}px`,
       display: 'flex',
       flexDirection: 'column',
+      margin: '0 auto',
     }}>
 
       {/* WATERMARK */}

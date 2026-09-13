@@ -74,7 +74,7 @@ export default function NewBill() {
 <meta charset="utf-8">
 <style>
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; width: 397px; background: white; }
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: white; }
   @page { size: 105.1mm 148.1mm; margin: 0; }
   @media print {
     -webkit-print-color-adjust: exact !important;
