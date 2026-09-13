@@ -35,19 +35,22 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
         </div>
       </div>
 
-      {/* Merchant / Customer Copy Badge */}
-      <div className="absolute top-4 right-4 text-[9px] font-bold text-[#94a3b8] border border-[#cbd5e1] px-1.5 py-0.5 uppercase rounded-sm">
-        {isMerchant ? 'Merchant Copy' : 'Customer Copy'}
-      </div>
-      
-      {/* Header */}
-      <div className="text-center mb-4 flex flex-col items-center shrink-0">
-        <div className="w-[40px] h-[40px] relative">
-          <Image src="/ganesha.png" alt="Ganesha" fill sizes="40px" style={{ objectFit: 'contain' }} priority />
+      {/* Header Area with Badge */}
+      <div className="flex items-start mb-4 shrink-0 w-full">
+        <div className="flex-1"></div>
+        <div className="flex-[2] text-center flex flex-col items-center">
+          <div className="w-[40px] h-[40px] relative">
+            <Image src="/ganesha.png" alt="Ganesha" fill sizes="40px" style={{ objectFit: 'contain' }} priority />
+          </div>
+          <h2 className="font-bold text-sm leading-tight mt-1">Quotation</h2>
+          <h3 className="uppercase tracking-widest text-[8px] text-[#64748b]">INVOICE</h3>
+          {storeName && <h1 className="font-bold text-base tracking-wide mt-1 text-[#1e3a8a]">{storeName}</h1>}
         </div>
-        <h2 className="font-bold text-sm leading-tight mt-1">Quotation</h2>
-        <h3 className="uppercase tracking-widest text-[8px] text-[#64748b]">INVOICE</h3>
-        {storeName && <h1 className="font-bold text-base tracking-wide mt-1 text-[#1e3a8a]">{storeName}</h1>}
+        <div className="flex-1 flex justify-end">
+          <div className="text-[8px] font-bold text-[#94a3b8] border border-[#cbd5e1] px-1.5 py-0.5 uppercase rounded-sm h-fit text-center whitespace-nowrap">
+            {isMerchant ? 'Merchant Copy' : 'Customer Copy'}
+          </div>
+        </div>
       </div>
 
       {/* Bill Meta */}
