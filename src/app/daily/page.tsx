@@ -133,7 +133,7 @@ export default function DailySummary() {
       >
         <div className="flex justify-center -mx-6 -mt-2">
           {viewingBill && (
-            <div id="modal-paper-bill-container" className="w-full shadow-lg print:shadow-none bg-white flex flex-col items-center">
+            <div id="modal-paper-bill-container" style={{ width: 396 }} className="flex flex-col items-center">
               <PaperBill 
                 billNumber={viewingBill.bill_number}
                 date={new Date(viewingBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-')}

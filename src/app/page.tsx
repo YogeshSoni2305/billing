@@ -205,7 +205,7 @@ export default function NewBill() {
             <Plus size={16} className="mr-2" /> New Bill
           </Button>
         </div>
-        <div id="paper-bill-container" className="w-full flex flex-col items-center shadow-lg">
+        <div id="paper-bill-container" style={{ width: 396 }} className="flex flex-col items-center">
           <PaperBill 
             billNumber={successBill.bill_number}
             date={new Date(successBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-')}

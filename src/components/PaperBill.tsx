@@ -90,10 +90,10 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
 
       {/* ── HEADER ─────────────────────────────────────────────────── */}
       <div style={{ height: HEADER_H, flexShrink: 0, display: 'flex', alignItems: 'flex-start', marginBottom: G1 }}>
-        {/* left spacer */}
-        <div style={{ flex: 1 }} />
-        {/* centre */}
-        <div style={{ flex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+        {/* left spacer: 100px */}
+        <div style={{ width: 100 }} />
+        {/* centre: 172px */}
+        <div style={{ width: 172, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
           <div style={{ width: 28, height: 28, position: 'relative' }}>
             <Image src="/ganesha.png" alt="Ganesha" fill sizes="28px" style={{ objectFit: 'contain' }} priority />
           </div>
@@ -105,8 +105,8 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
             </div>
           )}
         </div>
-        {/* badge */}
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', paddingTop: 2 }}>
+        {/* right badge: 100px */}
+        <div style={{ width: 100, display: 'flex', justifyContent: 'flex-end', paddingTop: 2 }}>
           <span style={{
             fontSize: 7, fontWeight: 700, color: '#94a3b8',
             border: '1px solid #cbd5e1', padding: '2px 4px',
