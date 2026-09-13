@@ -61,7 +61,7 @@ export default function NewBill() {
     // We import dynamically to avoid SSR issues with html2pdf
     const html2pdf = (await import('html2pdf.js')).default;
     
-    const opt = {
+    const opt: any = {
       margin:       0,
       filename:     `Invoice-${successBill?.bill_number || 'New'}.pdf`,
       image:        { type: 'jpeg', quality: 1 },

@@ -18,7 +18,7 @@ export default function MonthlySummary() {
     const element = document.getElementById('modal-paper-bill-container');
     if (!element) return;
     const html2pdf = (await import('html2pdf.js')).default;
-    const opt = {
+    const opt: any = {
       margin:       0,
       filename:     `Invoice-${viewingBill?.bill_number}.pdf`,
       image:        { type: 'jpeg', quality: 1 },
