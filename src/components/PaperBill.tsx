@@ -89,25 +89,25 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
         {/* Table Body */}
         <div className="flex flex-col flex-1 divide-y divide-[#e2e8f0]">
           {displayItems.map((item, idx) => (
-            <div key={idx} className={`grid ${gridColsClass} divide-x divide-[#e2e8f0] min-h-[16px]`}>
+            <div key={idx} className={`grid ${gridColsClass} divide-x divide-[#e2e8f0] h-[18px] max-h-[18px] overflow-hidden`}>
               {!item._empty ? (
                 <>
-                  <div className="p-0.5 flex items-center justify-center font-medium leading-tight">{item.quantity}</div>
-                  <div className="px-1.5 py-0.5 flex items-center uppercase leading-tight break-all overflow-hidden">{item.product_name}</div>
-                  <div className="px-1.5 py-0.5 flex items-center justify-end font-medium leading-tight">{item.rate.toFixed(2)}</div>
+                  <div className="px-0.5 flex items-center justify-center font-medium leading-none overflow-hidden">{item.quantity}</div>
+                  <div className="px-1.5 flex items-center uppercase leading-none overflow-hidden whitespace-nowrap text-ellipsis">{item.product_name}</div>
+                  <div className="px-1.5 flex items-center justify-end font-medium leading-none overflow-hidden">{item.rate.toFixed(2)}</div>
                   {hasDiscount && (
-                    <div className="px-1.5 py-0.5 flex items-center justify-end font-medium leading-tight">
+                    <div className="px-1.5 flex items-center justify-end font-medium leading-none overflow-hidden">
                       {item.discount || (() => {
                         const diff = (item.rate * item.quantity) - item.amount;
                         return diff > 0 ? (diff / item.quantity).toFixed(2) : '';
                       })()}
                     </div>
                   )}
-                  <div className="px-1.5 py-0.5 flex items-center justify-end font-bold leading-tight">{item.amount.toFixed(2)}</div>
+                  <div className="px-1.5 flex items-center justify-end font-bold leading-none overflow-hidden">{item.amount.toFixed(2)}</div>
                 </>
               ) : (
                 <>
-                  <div></div><div></div><div></div>{hasDiscount && <div></div>}<div></div>
+                  <div className="h-full"></div><div className="h-full"></div><div className="h-full"></div>{hasDiscount && <div className="h-full"></div>}<div className="h-full"></div>
                 </>
               )}
             </div>
