@@ -26,7 +26,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
     : "grid-cols-[40px_1fr_60px_70px]"
 
   return (
-    <div className="w-[396px] min-h-[561px] bg-white text-[#0f172a] relative mx-auto flex flex-col p-4 text-[10px] font-sans box-border overflow-hidden">
+    <div className="w-[396px] min-h-[561px] bg-white text-[#0f172a] relative mx-auto flex flex-col px-4 py-3 text-[10px] font-sans box-border overflow-hidden">
       
       {/* Watermark */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden">
@@ -36,15 +36,15 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
       </div>
 
       {/* Header Area with Badge */}
-      <div className="flex items-start mb-2 shrink-0 w-full">
+      <div className="flex items-start mb-1 shrink-0 w-full">
         <div className="flex-1"></div>
         <div className="flex-[2] text-center flex flex-col items-center">
-          <div className="w-[40px] h-[40px] relative">
-            <Image src="/ganesha.png" alt="Ganesha" fill sizes="40px" style={{ objectFit: 'contain' }} priority />
+          <div className="w-[32px] h-[32px] relative">
+            <Image src="/ganesha.png" alt="Ganesha" fill sizes="32px" style={{ objectFit: 'contain' }} priority />
           </div>
-          <h2 className="font-bold text-sm leading-tight mt-1">Quotation</h2>
+          <h2 className="font-bold text-sm leading-tight">Quotation</h2>
           <h3 className="uppercase tracking-widest text-[8px] text-[#64748b]">INVOICE</h3>
-          {storeName && <h1 className="font-bold text-base tracking-wide mt-1 text-[#1e3a8a]">{storeName}</h1>}
+          {storeName && <h1 className="font-bold text-base tracking-wide text-[#1e3a8a]">{storeName}</h1>}
         </div>
         <div className="flex-1 flex justify-end">
           <div className="text-[8px] font-bold text-[#94a3b8] border border-[#cbd5e1] px-1.5 py-0.5 uppercase h-fit text-center whitespace-nowrap">
@@ -89,7 +89,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
         {/* Table Body */}
         <div className="flex flex-col flex-1 divide-y divide-[#e2e8f0]">
           {displayItems.map((item, idx) => (
-            <div key={idx} className={`grid ${gridColsClass} divide-x divide-[#e2e8f0] min-h-[18px]`}>
+            <div key={idx} className={`grid ${gridColsClass} divide-x divide-[#e2e8f0] min-h-[16px]`}>
               {!item._empty ? (
                 <>
                   <div className="p-0.5 flex items-center justify-center font-medium leading-tight">{item.quantity}</div>
@@ -115,7 +115,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
         </div>
 
         {/* Table Footer */}
-        <div className="grid grid-cols-[1fr_60px_70px] border-t border-[#e2e8f0] divide-x divide-[#e2e8f0] h-8 bg-[#f8fafc] shrink-0">
+        <div className="grid grid-cols-[1fr_60px_70px] border-t border-[#e2e8f0] divide-x divide-[#e2e8f0] h-7 bg-[#f8fafc] shrink-0">
           <div className="px-2 flex items-center justify-end font-medium text-[#64748b]">
             Total Qty: <span className="font-bold ml-1 text-[#0f172a]">{totalQuantity}</span>
           </div>
