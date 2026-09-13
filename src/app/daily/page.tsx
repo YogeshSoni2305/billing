@@ -31,7 +31,7 @@ export default function DailySummary() {
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; width: 397px; background: white; }
-  @page { size: A6 portrait; margin: 0; }
+  @page { size: 105.1mm 148.1mm; margin: 0; }
   @media print { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   .bill-page + .bill-page { page-break-before: always; break-before: page; }
 
