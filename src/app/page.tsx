@@ -149,6 +149,12 @@ export default function NewBill() {
 
   const handleSubmit = async () => {
     if (validItems.length === 0) return alert("Bill is empty")
+    
+    const mobile = customerMobile.trim()
+    if (mobile && !/^\d{10}$/.test(mobile)) {
+      return alert("Mobile number must be exactly 10 digits")
+    }
+
     setIsSubmitting(true)
     try {
       const res = await createBill({ 
