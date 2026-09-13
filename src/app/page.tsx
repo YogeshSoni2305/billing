@@ -66,7 +66,8 @@ export default function NewBill() {
       filename:     `Invoice-${successBill?.bill_number || 'New'}.pdf`,
       image:        { type: 'jpeg', quality: 1 },
       html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm', format: 'a6', orientation: 'portrait' }
+      jsPDF:        { unit: 'mm', format: 'a6', orientation: 'portrait' },
+      pagebreak:    { mode: 'css', before: '.page-break' }
     };
     
     html2pdf().set(opt).from(element).save();
@@ -191,7 +192,18 @@ export default function NewBill() {
             <Plus size={16} className="mr-2" /> New Bill
           </Button>
         </div>
-        <div id="paper-bill-container" className="print:block w-full flex justify-center">
+        <div id="paper-bill-container" className="w-full flex flex-col items-center shadow-lg">
+          <PaperBill 
+            billNumber={successBill.bill_number}
+            date={new Date(successBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-')}
+            customerName={successBill.customer_name} 
+            customerMobile={successBill.customer_mobile}
+            storeName={showStoreName ? 'SAGAR ELECTRICALS' : ''}
+            items={successBill.items}
+            isMerchant={false} 
+            narration={narration}
+          />
+          <div className="page-break" style={{ pageBreakBefore: 'always' }}></div>
           <PaperBill 
             billNumber={successBill.bill_number}
             date={new Date(successBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-')}

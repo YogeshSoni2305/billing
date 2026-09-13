@@ -23,7 +23,8 @@ export default function MonthlySummary() {
       filename:     `Invoice-${viewingBill?.bill_number}.pdf`,
       image:        { type: 'jpeg', quality: 1 },
       html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm', format: 'a6', orientation: 'portrait' }
+      jsPDF:        { unit: 'mm', format: 'a6', orientation: 'portrait' },
+      pagebreak:    { mode: 'css', before: '.page-break' }
     };
     html2pdf().set(opt).from(element).save();
   }
@@ -151,10 +152,18 @@ export default function MonthlySummary() {
       >
         <div className="flex justify-center -mx-6 -mt-2">
           {viewingBill ? (
-            <div id="modal-paper-bill-container" className="w-full shadow-lg print:shadow-none bg-white">
+            <div id="modal-paper-bill-container" className="w-full shadow-lg print:shadow-none bg-white flex flex-col items-center">
               <PaperBill 
                 billNumber={viewingBill.bill_number}
-                date={viewingBill.timestamp ? new Date(viewingBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-') : ''}
+                date={new Date(viewingBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-')}
+                customerName={viewingBill.customer_name} 
+                items={viewingBill.items}
+                isMerchant={false} 
+              />
+              <div className="page-break" style={{ pageBreakBefore: 'always' }}></div>
+              <PaperBill 
+                billNumber={viewingBill.bill_number}
+                date={new Date(viewingBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-')}
                 customerName={viewingBill.customer_name} 
                 items={viewingBill.items}
                 isMerchant={true} 
