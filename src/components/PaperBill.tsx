@@ -2,7 +2,7 @@ import Image from 'next/image'
 
 export default function PaperBill({ billNumber, date, customerName, customerMobile, storeName = 'SAGAR ELECTRICALS', items, isMerchant, narration }: any) {
   
-  const MIN_ROWS = 10
+  const MIN_ROWS = 18
   const displayItems = [...(items || [])]
   while (displayItems.length < MIN_ROWS) {
     displayItems.push({ _empty: true })
@@ -36,7 +36,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
       </div>
 
       {/* Header Area with Badge */}
-      <div className="flex items-start mb-4 shrink-0 w-full">
+      <div className="flex items-start mb-2 shrink-0 w-full">
         <div className="flex-1"></div>
         <div className="flex-[2] text-center flex flex-col items-center">
           <div className="w-[40px] h-[40px] relative">
@@ -54,12 +54,12 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
       </div>
 
       {/* Bill Meta */}
-      <div className="flex justify-between font-semibold mb-3 text-[10px] shrink-0 px-1">
+      <div className="flex justify-between font-semibold mb-2 text-[10px] shrink-0 px-1">
         <div>No.: <span className="font-normal text-[#64748b]">{billNumber}</span></div>
         <div>Date: <span className="font-normal text-[#64748b]">{date}</span></div>
       </div>
 
-      <div className="flex flex-col gap-1.5 mb-3 text-[10px] shrink-0 px-1">
+      <div className="flex flex-col gap-1.5 mb-2 text-[10px] shrink-0 px-1">
         <div className="flex items-center gap-2">
           <div className="font-semibold w-8">M/s:</div>
           <div className="flex-1 border-b border-dashed border-[#d1d5db] pb-0.5 min-h-[16px] flex items-end">
@@ -78,7 +78,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
       <div className="border border-[#e2e8f0] rounded-sm flex-1 flex flex-col overflow-hidden text-[9px]">
         
         {/* Table Header */}
-        <div className={`grid ${gridColsClass} bg-[#f8fafc] border-b border-[#e2e8f0] font-semibold text-center divide-x divide-[#e2e8f0] py-1.5 text-[8px] uppercase tracking-wider text-[#64748b] shrink-0 leading-tight`}>
+        <div className={`grid ${gridColsClass} bg-[#f8fafc] border-b border-[#e2e8f0] font-semibold text-center divide-x divide-[#e2e8f0] py-1 text-[8px] uppercase tracking-wider text-[#64748b] shrink-0 leading-tight`}>
           <div>Qty</div>
           <div>DESCRIPTION</div>
           <div>Rate</div>
@@ -89,7 +89,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
         {/* Table Body */}
         <div className="flex flex-col flex-1 divide-y divide-[#e2e8f0]">
           {displayItems.map((item, idx) => (
-            <div key={idx} className={`grid ${gridColsClass} divide-x divide-[#e2e8f0] min-h-[22px]`}>
+            <div key={idx} className={`grid ${gridColsClass} divide-x divide-[#e2e8f0] min-h-[18px]`}>
               {!item._empty ? (
                 <>
                   <div className="p-0.5 flex items-center justify-center font-medium leading-tight">{item.quantity}</div>
@@ -115,7 +115,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
         </div>
 
         {/* Table Footer */}
-        <div className="grid grid-cols-[1fr_60px_70px] border-t border-[#e2e8f0] divide-x divide-[#e2e8f0] h-10 bg-[#f8fafc] shrink-0">
+        <div className="grid grid-cols-[1fr_60px_70px] border-t border-[#e2e8f0] divide-x divide-[#e2e8f0] h-8 bg-[#f8fafc] shrink-0">
           <div className="px-2 flex items-center justify-end font-medium text-[#64748b]">
             Total Qty: <span className="font-bold ml-1 text-[#0f172a]">{totalQuantity}</span>
           </div>
@@ -131,7 +131,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
       </div>
 
       {/* Footer Note */}
-      <div className="mt-3 flex items-start gap-2 shrink-0 px-1">
+      <div className="mt-2 flex items-start gap-2 shrink-0 px-1">
         <div className="font-semibold w-8 pt-0.5">Note:</div>
         <div className="flex-1 border-b border-dashed border-[#d1d5db] pb-0.5 min-h-[16px] flex items-end leading-tight break-all">
           {narration}
