@@ -28,17 +28,17 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
   return (
     <div className="w-full bg-white border border-[var(--color-border)] rounded-xl p-10 font-sans text-sm text-[var(--color-text-primary)] relative mx-auto print:border-none print:w-[105mm] print:min-h-[148.5mm] print:p-[4mm] print:text-[8px] print:overflow-hidden print:flex print:flex-col box-border">
       
-      <div className="absolute top-10 right-10 text-[10px] font-bold text-slate-400 border border-slate-300 px-2 py-1 uppercase rounded-sm print:hidden">
+      <div className="absolute top-10 right-10 text-[10px] font-bold text-[#94a3b8] border border-[#cbd5e1] px-2 py-1 uppercase rounded-sm print:hidden">
         {isMerchant ? 'Merchant Copy' : 'Customer Copy'}
       </div>
       
       <div className="text-center mb-8 print:mb-3 flex flex-col items-center print:shrink-0">
         <div className="w-[60px] h-[60px] print:w-[30px] print:h-[30px] relative">
-          <Image src="/ganesha.png" alt="Ganesha" fill style={{ objectFit: 'contain' }} priority />
+          <Image src="/ganesha.png" alt="Ganesha" fill sizes="60px" style={{ objectFit: 'contain' }} priority />
         </div>
         <h2 className="font-bold text-xl print:text-sm leading-tight mt-2 print:mt-1">Quotation</h2>
         <h3 className="uppercase tracking-widest text-sm print:text-[8px] text-[var(--color-text-secondary)]">INVOICE</h3>
-        {storeName && <h1 className="font-bold text-2xl print:text-base tracking-wide mt-2 print:mt-1 text-blue-900">{storeName}</h1>}
+        {storeName && <h1 className="font-bold text-2xl print:text-base tracking-wide mt-2 print:mt-1 text-[#1e3a8a]">{storeName}</h1>}
       </div>
 
       <div className="flex justify-between font-semibold mb-6 print:mb-2 text-sm print:text-[9px] print:shrink-0">
@@ -50,16 +50,16 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
         <div className="flex items-center gap-4 print:gap-2">
           <div className="font-semibold text-sm print:text-[9px] w-12 print:w-8 print:pt-0 pt-2">M/s:</div>
           <div className="flex-1">
-            <div className="w-full rounded-md border border-[var(--color-border)] print:border-none print:border-b print:border-dashed print:border-gray-300 print:rounded-none bg-white px-3 py-2 print:px-0 print:py-0 print:pb-0.5 text-sm print:text-[9px] text-[var(--color-text-primary)] min-h-[38px] print:min-h-[14px] flex items-center print:items-end">
-              {isMerchant && customerName ? customerName : <span className="text-slate-300"></span>}
+            <div className="w-full rounded-md border border-[var(--color-border)] print:border-none print:border-b print:border-dashed print:border-[#d1d5db] print:rounded-none bg-white px-3 py-2 print:px-0 print:py-0 print:pb-0.5 text-sm print:text-[9px] text-[var(--color-text-primary)] min-h-[38px] print:min-h-[14px] flex items-center print:items-end">
+              {isMerchant && customerName ? customerName : <span className="text-[#cbd5e1]"></span>}
             </div>
           </div>
         </div>
         <div className="flex items-center gap-4 print:gap-2">
           <div className="font-semibold text-sm print:text-[9px] w-20 print:w-8 print:pt-0 pt-2">Mob:</div>
           <div className="flex-1">
-            <div className="w-full rounded-md border border-[var(--color-border)] print:border-none print:border-b print:border-dashed print:border-gray-300 print:rounded-none bg-white px-3 py-2 print:px-0 print:py-0 print:pb-0.5 text-sm print:text-[9px] text-[var(--color-text-primary)] min-h-[38px] print:min-h-[14px] flex items-center print:items-end">
-              {isMerchant && customerMobile ? customerMobile : <span className="text-slate-300"></span>}
+            <div className="w-full rounded-md border border-[var(--color-border)] print:border-none print:border-b print:border-dashed print:border-[#d1d5db] print:rounded-none bg-white px-3 py-2 print:px-0 print:py-0 print:pb-0.5 text-sm print:text-[9px] text-[var(--color-text-primary)] min-h-[38px] print:min-h-[14px] flex items-center print:items-end">
+              {isMerchant && customerMobile ? customerMobile : <span className="text-[#cbd5e1]"></span>}
             </div>
           </div>
         </div>
@@ -119,7 +119,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
       <div className="mt-8 print:mt-3 flex items-center print:items-start gap-4 print:gap-2 print:shrink-0">
         <div className="font-semibold text-sm print:text-[9px] w-20 print:w-8 print:pt-0.5">Note:</div>
         <div className="flex-1">
-          <div className="w-full rounded-md border border-[var(--color-border)] print:border-none print:border-b print:border-dashed print:border-gray-300 print:rounded-none bg-white px-3 py-2 print:px-0 print:py-0 print:pb-0.5 text-sm print:text-[9px] text-[var(--color-text-primary)] min-h-[38px] print:min-h-[16px] flex items-center print:items-end print:leading-tight print:break-all">
+          <div className="w-full rounded-md border border-[var(--color-border)] print:border-none print:border-b print:border-dashed print:border-[#d1d5db] print:rounded-none bg-white px-3 py-2 print:px-0 print:py-0 print:pb-0.5 text-sm print:text-[9px] text-[var(--color-text-primary)] min-h-[38px] print:min-h-[16px] flex items-center print:items-end print:leading-tight print:break-all">
             {narration}
           </div>
         </div>
