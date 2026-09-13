@@ -14,33 +14,45 @@ export default function MonthlySummary() {
   const [loading, setLoading] = useState(true)
   const [viewingBill, setViewingBill] = useState<any>(null)
 
-  const generatePDF = async () => {
+  const generatePDF = () => {
     const element = document.getElementById('modal-paper-bill-container');
     if (!element) return;
-    const html2pdf = (await import('html2pdf.js')).default;
-    const opt: any = {
-      margin:       0,
-      filename:     `Invoice-${viewingBill?.bill_number}.pdf`,
-      image:        { type: 'jpeg', quality: 1 },
-      html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm', format: 'a6', orientation: 'portrait' },
-      pagebreak:    { mode: 'css', before: '.page-break' }
-    };
-    html2pdf().set(opt).from(element).output('bloburl').then(function(pdfUrl: string) {
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.src = pdfUrl;
-      document.body.appendChild(iframe);
-      iframe.onload = () => {
-        setTimeout(() => {
-          if (iframe.contentWindow) {
-            iframe.contentWindow.focus();
-            iframe.contentWindow.print();
-          }
-        }, 100);
-      };
+
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:396px;height:1200px;border:none;visibility:hidden;';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument!;
+    const origin = window.location.origin;
+
+    doc.open();
+    doc.write(`<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; width: 396px; background: white; }
+  @page { size: 105mm 148mm; margin: 0; }
+  @media print { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .page-break { page-break-before: always; break-before: page; display: block; }
+</style></head><body>
+${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"/g, '')}
+</body></html>`);
+    doc.close();
+
+    const imgs = Array.from(doc.querySelectorAll('img'));
+    const loaded = imgs.map(img =>
+      img.complete ? Promise.resolve() : new Promise<void>(res => { img.onload = () => res(); img.onerror = () => res(); })
+    );
+    Promise.all(loaded).then(() => {
+      setTimeout(() => {
+        iframe.style.visibility = 'visible';
+        iframe.contentWindow!.focus();
+        iframe.contentWindow!.print();
+        setTimeout(() => { if (document.body.contains(iframe)) document.body.removeChild(iframe); }, 2000);
+      }, 300);
     });
   }
+
 
   useEffect(() => {
     let active = true
