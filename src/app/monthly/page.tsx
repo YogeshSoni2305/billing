@@ -19,7 +19,7 @@ export default function MonthlySummary() {
     if (!element) return;
 
     const iframe = document.createElement('iframe');
-    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:396px;height:1200px;border:none;visibility:hidden;';
+    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:397px;height:1200px;border:none;visibility:hidden;';
     document.body.appendChild(iframe);
 
     const doc = iframe.contentDocument!;
@@ -30,8 +30,8 @@ export default function MonthlySummary() {
 <html><head><meta charset="utf-8">
 <style>
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; width: 396px; background: white; }
-  @page { size: 105mm 148mm; margin: 0; }
+  html, body { margin: 0; padding: 0; width: 397px; background: white; }
+  @page { size: 105.1mm 148.1mm; margin: 0; }
   @media print { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   .page-break { page-break-before: always; break-before: page; display: block; }
 </style></head><body>
@@ -177,7 +177,7 @@ ${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]
       >
         <div className="flex justify-center -mx-6 -mt-2">
           {viewingBill ? (
-            <div id="modal-paper-bill-container" style={{ width: 396 }} className="flex flex-col items-center">
+            <div id="modal-paper-bill-container" style={{ width: 397 }} className="flex flex-col items-center">
               <PaperBill 
                 billNumber={viewingBill.bill_number}
                 date={new Date(viewingBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-')}

@@ -60,7 +60,7 @@ export default function NewBill() {
     if (!element) return;
 
     const iframe = document.createElement('iframe');
-    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:396px;height:1200px;border:none;visibility:hidden;';
+    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:397px;height:1200px;border:none;visibility:hidden;';
     document.body.appendChild(iframe);
 
     const doc = iframe.contentDocument!;
@@ -74,8 +74,8 @@ export default function NewBill() {
 <meta charset="utf-8">
 <style>
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; width: 396px; background: white; }
-  @page { size: 105mm 148mm; margin: 0; }
+  html, body { margin: 0; padding: 0; width: 397px; background: white; }
+  @page { size: 105.1mm 148.1mm; margin: 0; }
   @media print {
     html, body { margin: 0; padding: 0; }
     -webkit-print-color-adjust: exact !important;
@@ -225,7 +225,7 @@ ${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]
             <Plus size={16} className="mr-2" /> New Bill
           </Button>
         </div>
-        <div id="paper-bill-container" style={{ width: 396 }} className="flex flex-col items-center">
+        <div id="paper-bill-container" style={{ width: 397 }} className="flex flex-col items-center">
           <PaperBill 
             billNumber={successBill.bill_number}
             date={new Date(successBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-')}
