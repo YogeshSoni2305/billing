@@ -29,11 +29,12 @@ export default function MonthlySummary() {
     doc.write(`<!DOCTYPE html>
 <html><head><meta charset="utf-8">
 <style>
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; width: 397px; background: white; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 397px; background: white; }
   @page { size: 105.1mm 148.1mm; margin: 0; }
   @media print { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  .page-break { page-break-before: always; break-before: page; display: block; }
+  .bill-page { page-break-after: always; break-after: page; }
+  .bill-page:last-child { page-break-after: avoid; break-after: avoid; }
 </style></head><body>
 ${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"/g, '')}
 </body></html>`);
@@ -185,7 +186,7 @@ ${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]
                 items={viewingBill.items}
                 isMerchant={false} 
               />
-              <div className="page-break" style={{ pageBreakBefore: 'always' }}></div>
+
               <PaperBill 
                 billNumber={viewingBill.bill_number}
                 date={new Date(viewingBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-')}

@@ -58,7 +58,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
   const FONT = "'Arial', sans-serif"
 
   return (
-    <div style={{
+    <div className="bill-page" style={{
       width: 397,
       height: 560,
       background: '#fff',
