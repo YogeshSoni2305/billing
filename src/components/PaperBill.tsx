@@ -20,53 +20,55 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
     return false;
   })
 
-  // Dual grid config: Screen (Large) vs Print (A6 Small)
+  // Fixed widths for perfectly rendering within a 396px container (A6 width)
   const gridColsClass = hasDiscount 
-    ? "grid-cols-[80px_1fr_80px_60px_100px] print:grid-cols-[30px_1fr_40px_35px_50px]" 
-    : "grid-cols-[80px_1fr_80px_100px] print:grid-cols-[30px_1fr_45px_55px]"
+    ? "grid-cols-[35px_1fr_50px_40px_60px]" 
+    : "grid-cols-[40px_1fr_60px_70px]"
 
   return (
-    <div className="w-full bg-white border border-[var(--color-border)] rounded-xl p-10 font-sans text-sm text-[var(--color-text-primary)] relative mx-auto print:border-none print:w-[105mm] print:min-h-[148.5mm] print:p-[4mm] print:text-[8px] print:overflow-hidden print:flex print:flex-col box-border">
+    <div className="w-[396px] min-h-[561px] bg-white text-[#0f172a] relative mx-auto flex flex-col p-4 text-[10px] font-sans box-border overflow-hidden">
       
-      <div className="absolute top-10 right-10 text-[10px] font-bold text-[#94a3b8] border border-[#cbd5e1] px-2 py-1 uppercase rounded-sm print:hidden">
+      {/* Merchant / Customer Copy Badge */}
+      <div className="absolute top-4 right-4 text-[9px] font-bold text-[#94a3b8] border border-[#cbd5e1] px-1.5 py-0.5 uppercase rounded-sm">
         {isMerchant ? 'Merchant Copy' : 'Customer Copy'}
       </div>
       
-      <div className="text-center mb-8 print:mb-3 flex flex-col items-center print:shrink-0">
-        <div className="w-[60px] h-[60px] print:w-[30px] print:h-[30px] relative">
-          <Image src="/ganesha.png" alt="Ganesha" fill sizes="60px" style={{ objectFit: 'contain' }} priority />
+      {/* Header */}
+      <div className="text-center mb-4 flex flex-col items-center shrink-0">
+        <div className="w-[40px] h-[40px] relative">
+          <Image src="/ganesha.png" alt="Ganesha" fill sizes="40px" style={{ objectFit: 'contain' }} priority />
         </div>
-        <h2 className="font-bold text-xl print:text-sm leading-tight mt-2 print:mt-1">Quotation</h2>
-        <h3 className="uppercase tracking-widest text-sm print:text-[8px] text-[var(--color-text-secondary)]">INVOICE</h3>
-        {storeName && <h1 className="font-bold text-2xl print:text-base tracking-wide mt-2 print:mt-1 text-[#1e3a8a]">{storeName}</h1>}
+        <h2 className="font-bold text-sm leading-tight mt-1">Quotation</h2>
+        <h3 className="uppercase tracking-widest text-[8px] text-[#64748b]">INVOICE</h3>
+        {storeName && <h1 className="font-bold text-base tracking-wide mt-1 text-[#1e3a8a]">{storeName}</h1>}
       </div>
 
-      <div className="flex justify-between font-semibold mb-6 print:mb-2 text-sm print:text-[9px] print:shrink-0">
-        <div>No.: <span className="font-normal text-[var(--color-text-secondary)]">{billNumber}</span></div>
-        <div>Date: <span className="font-normal text-[var(--color-text-secondary)]">{date}</span></div>
+      {/* Bill Meta */}
+      <div className="flex justify-between font-semibold mb-3 text-[10px] shrink-0 px-1">
+        <div>No.: <span className="font-normal text-[#64748b]">{billNumber}</span></div>
+        <div>Date: <span className="font-normal text-[#64748b]">{date}</span></div>
       </div>
 
-      <div className="grid grid-cols-2 gap-8 print:grid-cols-1 print:gap-1 mb-8 print:mb-3 print:text-[9px] print:shrink-0">
-        <div className="flex items-center gap-4 print:gap-2">
-          <div className="font-semibold text-sm print:text-[9px] w-12 print:w-8 print:pt-0 pt-2">M/s:</div>
-          <div className="flex-1">
-            <div className="w-full rounded-md border border-[var(--color-border)] print:border-none print:border-b print:border-dashed print:border-[#d1d5db] print:rounded-none bg-white px-3 py-2 print:px-0 print:py-0 print:pb-0.5 text-sm print:text-[9px] text-[var(--color-text-primary)] min-h-[38px] print:min-h-[14px] flex items-center print:items-end">
-              {isMerchant && customerName ? customerName : <span className="text-[#cbd5e1]"></span>}
-            </div>
+      <div className="flex flex-col gap-1.5 mb-3 text-[10px] shrink-0 px-1">
+        <div className="flex items-center gap-2">
+          <div className="font-semibold w-8">M/s:</div>
+          <div className="flex-1 border-b border-dashed border-[#d1d5db] pb-0.5 min-h-[16px] flex items-end">
+            {isMerchant && customerName ? customerName : <span className="text-[#cbd5e1]"></span>}
           </div>
         </div>
-        <div className="flex items-center gap-4 print:gap-2">
-          <div className="font-semibold text-sm print:text-[9px] w-20 print:w-8 print:pt-0 pt-2">Mob:</div>
-          <div className="flex-1">
-            <div className="w-full rounded-md border border-[var(--color-border)] print:border-none print:border-b print:border-dashed print:border-[#d1d5db] print:rounded-none bg-white px-3 py-2 print:px-0 print:py-0 print:pb-0.5 text-sm print:text-[9px] text-[var(--color-text-primary)] min-h-[38px] print:min-h-[14px] flex items-center print:items-end">
-              {isMerchant && customerMobile ? customerMobile : <span className="text-[#cbd5e1]"></span>}
-            </div>
+        <div className="flex items-center gap-2">
+          <div className="font-semibold w-8">Mob:</div>
+          <div className="flex-1 border-b border-dashed border-[#d1d5db] pb-0.5 min-h-[16px] flex items-end">
+            {isMerchant && customerMobile ? customerMobile : <span className="text-[#cbd5e1]"></span>}
           </div>
         </div>
       </div>
 
-      <div className="border border-[var(--color-border)] rounded-lg print:rounded-sm overflow-hidden print:flex-1 print:flex print:flex-col">
-        <div className={`grid ${gridColsClass} bg-[var(--color-surface)] border-b border-[var(--color-border)] font-semibold text-center divide-x divide-[var(--color-border)] py-3 print:py-1.5 text-xs print:text-[8px] uppercase tracking-wider text-[var(--color-text-secondary)] print:shrink-0 print:leading-tight`}>
+      {/* Table */}
+      <div className="border border-[#e2e8f0] rounded-sm flex-1 flex flex-col overflow-hidden text-[9px]">
+        
+        {/* Table Header */}
+        <div className={`grid ${gridColsClass} bg-[#f8fafc] border-b border-[#e2e8f0] font-semibold text-center divide-x divide-[#e2e8f0] py-1.5 text-[8px] uppercase tracking-wider text-[#64748b] shrink-0 leading-tight`}>
           <div>Qty</div>
           <div>DESCRIPTION</div>
           <div>Rate</div>
@@ -74,23 +76,24 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
           <div>Amount</div>
         </div>
 
-        <div className="flex flex-col min-h-[400px] print:min-h-0 print:flex-1 divide-y divide-[var(--color-border)] print:text-[9px]">
+        {/* Table Body */}
+        <div className="flex flex-col flex-1 divide-y divide-[#e2e8f0]">
           {displayItems.map((item, idx) => (
-            <div key={idx} className={`grid ${gridColsClass} divide-x divide-[var(--color-border)] h-10 print:h-auto print:min-h-[22px]`}>
+            <div key={idx} className={`grid ${gridColsClass} divide-x divide-[#e2e8f0] min-h-[22px]`}>
               {!item._empty ? (
                 <>
-                  <div className="p-1 print:p-0.5 flex items-center justify-center font-medium print:leading-tight">{item.quantity} <span className="print:hidden ml-1">NOS</span></div>
-                  <div className="p-1 px-2 print:px-1 flex items-center uppercase print:leading-tight print:overflow-hidden">{item.product_name}</div>
-                  <div className="p-1 px-2 print:px-1 flex items-center justify-end font-medium print:leading-tight">{item.rate.toFixed(2)}</div>
+                  <div className="p-0.5 flex items-center justify-center font-medium leading-tight">{item.quantity}</div>
+                  <div className="px-1.5 py-0.5 flex items-center uppercase leading-tight break-all overflow-hidden">{item.product_name}</div>
+                  <div className="px-1.5 py-0.5 flex items-center justify-end font-medium leading-tight">{item.rate.toFixed(2)}</div>
                   {hasDiscount && (
-                    <div className="p-1 px-2 print:px-1 flex items-center justify-end font-medium print:leading-tight">
+                    <div className="px-1.5 py-0.5 flex items-center justify-end font-medium leading-tight">
                       {item.discount || (() => {
                         const diff = (item.rate * item.quantity) - item.amount;
                         return diff > 0 ? (diff / item.quantity).toFixed(2) : '';
                       })()}
                     </div>
                   )}
-                  <div className="px-3 print:px-1 flex items-center justify-end font-bold text-[var(--color-text-primary)] print:leading-tight">{item.amount.toFixed(2)}</div>
+                  <div className="px-1.5 py-0.5 flex items-center justify-end font-bold leading-tight">{item.amount.toFixed(2)}</div>
                 </>
               ) : (
                 <>
@@ -101,27 +104,27 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
           ))}
         </div>
 
-        <div className="grid grid-cols-[1fr_160px_100px] print:grid-cols-[1fr_50px_60px] border-t border-[var(--color-border)] divide-x divide-[var(--color-border)] h-16 print:h-10 bg-[var(--color-surface)] print:shrink-0 print:text-[9px]">
-          <div className="p-4 print:p-0 print:px-2 flex items-center justify-end font-medium text-[var(--color-text-secondary)] text-sm print:text-[9px]">
-            Total Qty: <span className="font-bold ml-2 print:ml-1 text-[var(--color-text-primary)]">{totalQuantity}</span>
+        {/* Table Footer */}
+        <div className="grid grid-cols-[1fr_60px_70px] border-t border-[#e2e8f0] divide-x divide-[#e2e8f0] h-10 bg-[#f8fafc] shrink-0">
+          <div className="px-2 flex items-center justify-end font-medium text-[#64748b]">
+            Total Qty: <span className="font-bold ml-1 text-[#0f172a]">{totalQuantity}</span>
           </div>
-          <div className="flex flex-col justify-center px-4 print:px-1 text-xs print:text-[8px]">
-            <div className="text-[var(--color-text-secondary)]">Total</div>
-            <div className="font-bold text-[var(--color-text-primary)] uppercase tracking-wider">Net</div>
+          <div className="flex flex-col justify-center px-1.5 text-[8px]">
+            <div className="text-[#64748b]">Total</div>
+            <div className="font-bold text-[#0f172a] uppercase tracking-wider">Net</div>
           </div>
-          <div className="flex flex-col justify-center text-right px-4 print:px-1 text-sm print:text-[10px]">
-            <div className="text-[var(--color-text-secondary)] print:text-[8px]">{grandTotal.toFixed(2)}</div>
-            <div className="font-bold text-[var(--color-primary)] text-base print:text-[10px]">{grandTotal.toFixed(2)}</div>
+          <div className="flex flex-col justify-center text-right px-1.5 text-[9px]">
+            <div className="text-[#64748b] text-[8px]">{grandTotal.toFixed(2)}</div>
+            <div className="font-bold text-[#10b981] text-[10px]">{grandTotal.toFixed(2)}</div>
           </div>
         </div>
       </div>
 
-      <div className="mt-8 print:mt-3 flex items-center print:items-start gap-4 print:gap-2 print:shrink-0">
-        <div className="font-semibold text-sm print:text-[9px] w-20 print:w-8 print:pt-0.5">Note:</div>
-        <div className="flex-1">
-          <div className="w-full rounded-md border border-[var(--color-border)] print:border-none print:border-b print:border-dashed print:border-[#d1d5db] print:rounded-none bg-white px-3 py-2 print:px-0 print:py-0 print:pb-0.5 text-sm print:text-[9px] text-[var(--color-text-primary)] min-h-[38px] print:min-h-[16px] flex items-center print:items-end print:leading-tight print:break-all">
-            {narration}
-          </div>
+      {/* Footer Note */}
+      <div className="mt-3 flex items-start gap-2 shrink-0 px-1">
+        <div className="font-semibold w-8 pt-0.5">Note:</div>
+        <div className="flex-1 border-b border-dashed border-[#d1d5db] pb-0.5 min-h-[16px] flex items-end leading-tight break-all">
+          {narration}
         </div>
       </div>
 
