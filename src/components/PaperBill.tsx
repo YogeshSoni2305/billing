@@ -78,12 +78,12 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
       <div className="border border-[#e2e8f0] rounded-sm flex-1 flex flex-col overflow-hidden text-[9px]">
         
         {/* Table Header */}
-        <div className={`grid ${gridColsClass} bg-[#f8fafc] border-b border-[#e2e8f0] font-semibold text-center divide-x divide-[#e2e8f0] py-1 text-[8px] uppercase tracking-wider text-[#64748b] shrink-0 leading-tight`}>
-          <div>Qty</div>
-          <div>DESCRIPTION</div>
-          <div>Rate</div>
-          {hasDiscount && <div>Disc</div>}
-          <div>Amount</div>
+        <div className={`grid ${gridColsClass} bg-[#f8fafc] border-b border-[#e2e8f0] font-semibold divide-x divide-[#e2e8f0] py-1 text-[8px] uppercase tracking-wider text-[#64748b] shrink-0 leading-tight`}>
+          <div className="text-center">Qty</div>
+          <div className="text-left px-1.5">DESCRIPTION</div>
+          <div className="text-right px-1.5">Rate</div>
+          {hasDiscount && <div className="text-right px-1.5">Disc</div>}
+          <div className="text-right px-1.5">Amount</div>
         </div>
 
         {/* Table Body */}
@@ -92,18 +92,18 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
             <div key={idx} className={`grid ${gridColsClass} divide-x divide-[#e2e8f0] h-[18px] max-h-[18px] overflow-hidden`}>
               {!item._empty ? (
                 <>
-                  <div className="px-0.5 flex items-center justify-center font-medium leading-none overflow-hidden">{item.quantity}</div>
-                  <div className="px-1.5 flex items-center uppercase leading-none overflow-hidden whitespace-nowrap text-ellipsis">{item.product_name}</div>
-                  <div className="px-1.5 flex items-center justify-end font-medium leading-none overflow-hidden">{item.rate.toFixed(2)}</div>
+                  <div className="px-0.5 flex items-center justify-center font-medium overflow-hidden">{item.quantity}</div>
+                  <div className="px-1.5 flex items-center justify-start uppercase overflow-hidden whitespace-nowrap text-ellipsis">{item.product_name}</div>
+                  <div className="px-1.5 flex items-center justify-end font-medium overflow-hidden">{item.rate.toFixed(2)}</div>
                   {hasDiscount && (
-                    <div className="px-1.5 flex items-center justify-end font-medium leading-none overflow-hidden">
+                    <div className="px-1.5 flex items-center justify-end font-medium overflow-hidden">
                       {item.discount || (() => {
                         const diff = (item.rate * item.quantity) - item.amount;
                         return diff > 0 ? (diff / item.quantity).toFixed(2) : '';
                       })()}
                     </div>
                   )}
-                  <div className="px-1.5 flex items-center justify-end font-bold leading-none overflow-hidden">{item.amount.toFixed(2)}</div>
+                  <div className="px-1.5 flex items-center justify-end font-bold overflow-hidden">{item.amount.toFixed(2)}</div>
                 </>
               ) : (
                 <>
