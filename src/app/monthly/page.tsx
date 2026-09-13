@@ -14,6 +14,20 @@ export default function MonthlySummary() {
   const [loading, setLoading] = useState(true)
   const [viewingBill, setViewingBill] = useState<any>(null)
 
+  const generatePDF = async () => {
+    const element = document.getElementById('modal-paper-bill-container');
+    if (!element) return;
+    const html2pdf = (await import('html2pdf.js')).default;
+    const opt = {
+      margin:       0,
+      filename:     `Invoice-${viewingBill?.bill_number}.pdf`,
+      image:        { type: 'jpeg', quality: 1 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a6', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+  }
+
   useEffect(() => {
     let active = true
     setLoading(true)
@@ -131,13 +145,13 @@ export default function MonthlySummary() {
         footer={
           <>
             <Button variant="secondary" onClick={() => setViewingBill(null)}>Close</Button>
-            <Button onClick={() => window.print()}>Print Invoice</Button>
+            <Button onClick={generatePDF}>Download PDF</Button>
           </>
         }
       >
         <div className="flex justify-center -mx-6 -mt-2">
           {viewingBill ? (
-            <div className="w-full shadow-lg print:shadow-none bg-white">
+            <div id="modal-paper-bill-container" className="w-full shadow-lg print:shadow-none bg-white">
               <PaperBill 
                 billNumber={viewingBill.bill_number}
                 date={viewingBill.timestamp ? new Date(viewingBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-') : ''}

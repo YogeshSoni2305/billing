@@ -49,10 +49,28 @@ export default function NewBill() {
     getNextBillNumber().then(setNextBillNumber)
     if (successBill) {
       setTimeout(() => {
-        window.print()
+        generatePDF()
       }, 100)
     }
   }, [successBill])
+
+  const generatePDF = async () => {
+    const element = document.getElementById('paper-bill-container');
+    if (!element) return;
+    
+    // We import dynamically to avoid SSR issues with html2pdf
+    const html2pdf = (await import('html2pdf.js')).default;
+    
+    const opt = {
+      margin:       0,
+      filename:     `Invoice-${successBill?.bill_number || 'New'}.pdf`,
+      image:        { type: 'jpeg', quality: 1 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a6', orientation: 'portrait' }
+    };
+    
+    html2pdf().set(opt).from(element).save();
+  }
 
   const handleSearch = (query: string, rowIndex: number) => {
     setActiveRow(rowIndex)
@@ -160,14 +178,14 @@ export default function NewBill() {
     return (
       <div className="w-full flex flex-col items-center">
         <div className="print:hidden w-full max-w-[800px] flex justify-end gap-4 p-4">
-          <Button onClick={() => window.print()} variant="secondary" className="shadow-sm">
-            <Printer size={16} className="mr-2" /> Print Again
+          <Button onClick={generatePDF} variant="secondary" className="shadow-sm">
+            <Printer size={16} className="mr-2" /> Download PDF
           </Button>
           <Button onClick={() => { setSuccessBill(null); setRequestId(crypto.randomUUID()); }} className="shadow-sm">
             <Plus size={16} className="mr-2" /> New Bill
           </Button>
         </div>
-        <div className="print:block w-full">
+        <div id="paper-bill-container" className="print:block w-full flex justify-center">
           <PaperBill 
             billNumber={successBill.bill_number}
             date={new Date(successBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-')}
