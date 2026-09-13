@@ -47,7 +47,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
           {storeName && <h1 className="font-bold text-base tracking-wide mt-1 text-[#1e3a8a]">{storeName}</h1>}
         </div>
         <div className="flex-1 flex justify-end">
-          <div className="text-[8px] font-bold text-[#94a3b8] border border-[#cbd5e1] px-1.5 py-0.5 uppercase rounded-sm h-fit text-center whitespace-nowrap">
+          <div className="text-[8px] font-bold text-[#94a3b8] border border-[#cbd5e1] px-1.5 py-0.5 uppercase h-fit text-center whitespace-nowrap">
             {isMerchant ? 'Merchant Copy' : 'Customer Copy'}
           </div>
         </div>
