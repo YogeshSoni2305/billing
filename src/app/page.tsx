@@ -21,7 +21,7 @@ export default function NewBill() {
   const [showStoreName, setShowStoreName] = useState(true)
   const [narration, setNarration] = useState('')
   
-  const MIN_ROWS = 12
+  const MIN_ROWS = 18
   const emptyRow = { product_name: '', quantity: '', rate: '', discount: '', amount: 0 }
   const [cart, setCart] = useState<any[]>(Array(MIN_ROWS).fill(null).map(() => ({ ...emptyRow })))
   
@@ -230,13 +230,13 @@ export default function NewBill() {
         </Button>
       </div>
 
-      <div className="bg-white w-full shadow-xl border border-[var(--color-border)] rounded-xl p-6 md:p-10 font-sans text-sm text-[var(--color-text-primary)] relative">
+      <div className="bg-white w-full shadow-xl border border-[var(--color-border)] rounded-xl p-4 md:p-6 font-sans text-sm text-[var(--color-text-primary)] relative">
         
-        <div className="text-center mb-8 flex flex-col items-center">
-          <Image src="/ganesha.png" alt="Ganesha" width={60} height={60} priority />
-          <h2 className="font-bold text-xl leading-tight mt-2">Quotation</h2>
-          <h3 className="uppercase tracking-widest text-sm text-[var(--color-text-secondary)]">INVOICE</h3>
-          {showStoreName && <h1 className="font-bold text-2xl tracking-wide mt-2 text-blue-900">SAGAR ELECTRICALS</h1>}
+        <div className="text-center mb-4 flex flex-col items-center">
+          <Image src="/ganesha.png" alt="Ganesha" width={50} height={50} priority />
+          <h2 className="font-bold text-lg leading-tight mt-1">Quotation</h2>
+          <h3 className="uppercase tracking-widest text-xs text-[var(--color-text-secondary)]">INVOICE</h3>
+          {showStoreName && <h1 className="font-bold text-xl tracking-wide mt-1 text-blue-900">SAGAR ELECTRICALS</h1>}
           
           <div className="mt-4 print:hidden flex items-center gap-2">
             <input 
@@ -252,12 +252,12 @@ export default function NewBill() {
           </div>
         </div>
 
-        <div className="flex justify-between font-semibold mb-6 text-sm">
+        <div className="flex justify-between font-semibold mb-4 text-sm">
           <div>No. &nbsp;&nbsp;&nbsp;&nbsp;: <span className="font-normal text-[var(--color-text-secondary)]">{nextBillNumber}</span></div>
           <div>Date: <span className="font-normal text-[var(--color-text-secondary)]">{currentDate}</span></div>
         </div>
 
-        <div className="grid grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-2 gap-4 mb-4">
           <div className="flex items-center gap-4">
             <div className="font-semibold text-sm w-12 pt-2">M/s:</div>
             <div className="flex-1">
