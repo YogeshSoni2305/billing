@@ -26,7 +26,20 @@ export default function DailySummary() {
       jsPDF:        { unit: 'mm', format: 'a6', orientation: 'portrait' },
       pagebreak:    { mode: 'css', before: '.page-break' }
     };
-    html2pdf().set(opt).from(element).save();
+    html2pdf().set(opt).from(element).output('bloburl').then(function(pdfUrl: string) {
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = pdfUrl;
+      document.body.appendChild(iframe);
+      iframe.onload = () => {
+        setTimeout(() => {
+          if (iframe.contentWindow) {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+          }
+        }, 100);
+      };
+    });
   }
 
   useEffect(() => {
@@ -114,7 +127,7 @@ export default function DailySummary() {
         footer={
           <>
             <Button variant="secondary" onClick={() => setViewingBill(null)}>Close</Button>
-            <Button onClick={generatePDF}>Download PDF</Button>
+            <Button onClick={generatePDF}>Print Bill</Button>
           </>
         }
       >

@@ -70,8 +70,20 @@ export default function NewBill() {
       jsPDF:        { unit: 'mm', format: 'a6', orientation: 'portrait' },
       pagebreak:    { mode: 'css', before: '.page-break' }
     };
-    
-    html2pdf().set(opt).from(element).save();
+    html2pdf().set(opt).from(element).output('bloburl').then(function(pdfUrl: string) {
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = pdfUrl;
+      document.body.appendChild(iframe);
+      iframe.onload = () => {
+        setTimeout(() => {
+          if (iframe.contentWindow) {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+          }
+        }, 100);
+      };
+    });
   }
 
   const handleSearch = (query: string, rowIndex: number) => {
@@ -187,7 +199,7 @@ export default function NewBill() {
       <div className="w-full flex flex-col items-center">
         <div className="print:hidden w-full max-w-[800px] flex justify-end gap-4 p-4">
           <Button onClick={generatePDF} variant="secondary" className="shadow-sm">
-            <Printer size={16} className="mr-2" /> Download PDF
+            <Printer size={16} className="mr-2" /> Print Bill
           </Button>
           <Button onClick={() => { setSuccessBill(null); setRequestId(crypto.randomUUID()); }} className="shadow-sm">
             <Plus size={16} className="mr-2" /> New Bill

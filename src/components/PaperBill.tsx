@@ -29,8 +29,8 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
     <div className="w-[396px] min-h-[561px] bg-white text-[#0f172a] relative mx-auto flex flex-col p-4 text-[10px] font-sans box-border overflow-hidden">
       
       {/* Watermark */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] select-none">
-        <div className="text-[70px] font-black -rotate-45 tracking-widest">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden">
+        <div style={{ transform: 'rotate(-45deg)', color: 'rgba(0, 0, 0, 0.05)', fontSize: '75px', fontWeight: '900', letterSpacing: '0.1em' }}>
           FINOLEX
         </div>
       </div>
