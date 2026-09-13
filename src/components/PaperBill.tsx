@@ -28,6 +28,13 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
   return (
     <div className="w-[396px] min-h-[561px] bg-white text-[#0f172a] relative mx-auto flex flex-col p-4 text-[10px] font-sans box-border overflow-hidden">
       
+      {/* Watermark */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] select-none">
+        <div className="text-[70px] font-black -rotate-45 tracking-widest">
+          FINOLEX
+        </div>
+      </div>
+
       {/* Merchant / Customer Copy Badge */}
       <div className="absolute top-4 right-4 text-[9px] font-bold text-[#94a3b8] border border-[#cbd5e1] px-1.5 py-0.5 uppercase rounded-sm">
         {isMerchant ? 'Merchant Copy' : 'Customer Copy'}

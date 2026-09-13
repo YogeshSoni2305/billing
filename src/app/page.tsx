@@ -19,6 +19,7 @@ export default function NewBill() {
   const [customerName, setCustomerName] = useState('')
   const [customerMobile, setCustomerMobile] = useState('')
   const [showStoreName, setShowStoreName] = useState(true)
+  const [printMerchantCopy, setPrintMerchantCopy] = useState(true)
   const [narration, setNarration] = useState('')
   
   const MIN_ROWS = 18
@@ -203,17 +204,21 @@ export default function NewBill() {
             isMerchant={false} 
             narration={narration}
           />
-          <div className="page-break" style={{ pageBreakBefore: 'always' }}></div>
-          <PaperBill 
-            billNumber={successBill.bill_number}
-            date={new Date(successBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-')}
-            customerName={successBill.customer_name} 
-            customerMobile={successBill.customer_mobile}
-            storeName={showStoreName ? 'SAGAR ELECTRICALS' : ''}
-            items={successBill.items}
-            isMerchant={true} 
-            narration={narration}
-          />
+          {printMerchantCopy && (
+            <>
+              <div className="page-break" style={{ pageBreakBefore: 'always' }}></div>
+              <PaperBill 
+                billNumber={successBill.bill_number}
+                date={new Date(successBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-')}
+                customerName={successBill.customer_name} 
+                customerMobile={successBill.customer_mobile}
+                storeName={showStoreName ? 'SAGAR ELECTRICALS' : ''}
+                items={successBill.items}
+                isMerchant={true} 
+                narration={narration}
+              />
+            </>
+          )}
         </div>
       </div>
     )
@@ -238,16 +243,25 @@ export default function NewBill() {
           <h3 className="uppercase tracking-widest text-xs text-[var(--color-text-secondary)]">INVOICE</h3>
           {showStoreName && <h1 className="font-bold text-xl tracking-wide mt-1 text-blue-900">SAGAR ELECTRICALS</h1>}
           
-          <div className="mt-4 print:hidden flex items-center gap-2">
-            <input 
-              type="checkbox" 
-              id="toggle-store-name"
-              checked={showStoreName}
-              onChange={e => setShowStoreName(e.target.checked)}
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <label htmlFor="toggle-store-name" className="text-sm text-gray-600 font-medium cursor-pointer">
-              Print Store Name
+          <div className="mt-4 print:hidden flex items-center justify-center gap-6">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input 
+                type="checkbox" 
+                checked={showStoreName}
+                onChange={e => setShowStoreName(e.target.checked)}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <span className="text-sm text-gray-600 font-medium">Print Store Name</span>
+            </label>
+            
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input 
+                type="checkbox" 
+                checked={printMerchantCopy}
+                onChange={e => setPrintMerchantCopy(e.target.checked)}
+                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <span className="text-sm text-gray-600 font-medium">Print Merchant Copy</span>
             </label>
           </div>
         </div>
