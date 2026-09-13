@@ -53,13 +53,13 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
         <div className="flex items-center gap-2">
           <div className="font-semibold w-8">M/s:</div>
           <div className="flex-1 border-b border-dashed border-[#d1d5db] pb-0.5 min-h-[16px] flex items-end">
-            {isMerchant && customerName ? customerName : <span className="text-[#cbd5e1]"></span>}
+            {customerName ? customerName : <span className="text-[#cbd5e1]"></span>}
           </div>
         </div>
         <div className="flex items-center gap-2">
           <div className="font-semibold w-8">Mob:</div>
           <div className="flex-1 border-b border-dashed border-[#d1d5db] pb-0.5 min-h-[16px] flex items-end">
-            {isMerchant && customerMobile ? customerMobile : <span className="text-[#cbd5e1]"></span>}
+            {customerMobile ? customerMobile : <span className="text-[#cbd5e1]"></span>}
           </div>
         </div>
       </div>
