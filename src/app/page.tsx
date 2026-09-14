@@ -60,19 +60,16 @@ export default function NewBill() {
     if (!element) return;
 
     const origin = window.location.origin;
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      alert("Please allow pop-ups to print the bill.");
-      return;
-    }
 
-    // Clone the element to safely remove known extension injections before printing
-    const clone = element.cloneNode(true) as HTMLElement;
-    const badElements = clone.querySelectorAll('iframe, script, style, noscript, [id^="ext-"], [class^="ext-"], [id*="extension"], [class*="extension"], grammarly-extension, [data-extension]');
-    badElements.forEach(el => el.remove());
-    
-    printWindow.document.open();
-    printWindow.document.write(`<!DOCTYPE html>
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow?.document;
+    if (!doc) return;
+
+    doc.open();
+    doc.write(`<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -84,35 +81,32 @@ export default function NewBill() {
   @media print {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    /* Force hide ANY elements injected directly into body by extensions */
-    body > *:not(.bill-page) { display: none !important; }
-    /* Hide common extension iframes/shadow roots */
-    iframe, [id^="ext-"], [class^="ext-"], [id*="extension"], [class*="extension"], grammarly-extension { display: none !important; }
   }
   .bill-page + .bill-page { page-break-before: always; break-before: page; }
 </style>
 </head>
 <body>
-${clone.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"/g, '')}
+${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"/g, '')}
 </body>
 </html>`);
-    printWindow.document.close();
+    doc.close();
 
-    const imgs = Array.from(printWindow.document.querySelectorAll('img'));
+    const imgs = Array.from(doc.querySelectorAll('img'));
     const loaded = imgs.map(img =>
       img.complete ? Promise.resolve() : new Promise<void>(res => { img.onload = () => res(); img.onerror = () => res(); })
     );
 
     Promise.all(loaded).then(() => {
-      printWindow.onafterprint = () => {
-        printWindow.close();
-        setSuccessBill(null);
-        setRequestId(crypto.randomUUID());
-      };
-      
       setTimeout(() => {
-        printWindow.focus();
-        printWindow.print();
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        
+        // Auto-close / clean up
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+          setSuccessBill(null);
+          setRequestId(crypto.randomUUID());
+        }, 1000);
       }, 300);
     });
   }
