@@ -26,6 +26,8 @@ export default function DailySummary() {
     }
 
     const clone = element.cloneNode(true) as HTMLElement;
+    const badElements = clone.querySelectorAll('iframe, script, style, noscript, [id^="ext-"], [class^="ext-"], [id*="extension"], [class*="extension"], grammarly-extension, [data-extension]');
+    badElements.forEach(el => el.remove());
 
     printWindow.document.open();
     printWindow.document.write(`<!DOCTYPE html>
