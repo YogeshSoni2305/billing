@@ -25,6 +25,8 @@ export default function MonthlySummary() {
       return;
     }
 
+    const clone = element.cloneNode(true) as HTMLElement;
+
     printWindow.document.open();
     printWindow.document.write(`<!DOCTYPE html>
 <html>
@@ -35,12 +37,17 @@ export default function MonthlySummary() {
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; width: 105mm; height: 148mm; background: white; }
   @page { size: 105mm 148mm; margin: 0; }
-  @media print { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  @media print { 
+    -webkit-print-color-adjust: exact !important; 
+    print-color-adjust: exact !important; 
+    body > *:not(.bill-page) { display: none !important; }
+    iframe, [id^="ext-"], [class^="ext-"], [id*="extension"], [class*="extension"], grammarly-extension { display: none !important; }
+  }
   .bill-page + .bill-page { page-break-before: always; break-before: page; }
 </style>
 </head>
 <body>
-${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"/g, '')}
+${clone.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"/g, '')}
 </body>
 </html>`);
     printWindow.document.close();
