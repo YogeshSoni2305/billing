@@ -54,10 +54,10 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
 
   return (
     <div className="bill-page" style={{
-      width: '100%',
-      maxWidth: 397,
-      height: 545,
-      maxHeight: 550,
+      width: 397,
+      minWidth: 397,
+      height: 560,
+      minHeight: 560,
       background: '#fff',
       color: '#0f172a',
       fontFamily: FONT,
