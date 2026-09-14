@@ -17,7 +17,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
   const G3 = 2  // after customer
   const G4 = 2  // between table and note
 
-  const MIN_ROWS = 18
+  const MIN_ROWS = 17
   const usedPx = PY + HEADER_H + G1 + META_H + G2 + CUSTOMER_H + G3
                + TBL_HEAD_H + TBL_FOOT_H + G4 + NOTE_H + PY + 2
   const availableForRows = 525 - usedPx
