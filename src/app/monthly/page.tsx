@@ -18,32 +18,45 @@ export default function MonthlySummary() {
     const element = document.getElementById('modal-paper-bill-container');
     if (!element) return;
     
-    const html2pdf = (await import('html2pdf.js')).default;
+    const html2canvas = (await import('html2canvas')).default;
+    const { jsPDF } = await import('jspdf');
     
-    const opt = {
-      margin:       0,
-      filename:     `Bill_${viewingBill?.billNumber || 'receipt'}.pdf`,
-      image:        { type: 'jpeg', quality: 1 },
-      html2canvas:  { 
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: [105, 148]
+    });
+    
+    const pages = element.querySelectorAll('.bill-page');
+    if (pages.length === 0) return;
+
+    for (let i = 0; i < pages.length; i++) {
+      if (i > 0) pdf.addPage([105, 148], 'portrait');
+      
+      const pageEl = pages[i] as HTMLElement;
+      
+      const canvas = await html2canvas(pageEl, {
         scale: 4, 
         windowWidth: 397,
-        useCORS: true 
-      },
-      jsPDF: { 
-        unit: 'mm', 
-        format: [105, 148], // STRICT A6
-        orientation: 'portrait' 
-      }
-    };
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      });
+      
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      
+      const pdfWidth = 105;
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+    }
     
-    html2pdf().set(opt).from(element).output('bloburl').then(function(pdfUrl: string) {
-      const printWindow = window.open(pdfUrl, '_blank');
-      if (printWindow) {
-        setViewingBill(null);
-      } else {
-        alert("Please allow pop-ups to print the bill.");
-      }
-    });
+    const pdfUrl = pdf.output('bloburl');
+    const printWindow = window.open(pdfUrl, '_blank');
+    if (printWindow) {
+      setViewingBill(null);
+    } else {
+      alert("Please allow pop-ups to print the bill.");
+    }
   }
 
 

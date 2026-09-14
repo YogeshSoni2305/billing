@@ -60,36 +60,53 @@ export default function NewBill() {
     if (!element) return;
     
     // Dynamically import to avoid SSR issues
-    const html2pdf = (await import('html2pdf.js')).default;
+    const html2canvas = (await import('html2canvas')).default;
+    const { jsPDF } = await import('jspdf');
     
-    const opt = {
-      margin:       0,
-      filename:     `Bill_${successBill?.billNumber || 'receipt'}.pdf`,
-      image:        { type: 'jpeg', quality: 1 },
-      html2canvas:  { 
+    // 1. Force STRICT A6 PDF page dimensions for printer compatibility
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: [105, 148]
+    });
+    
+    // 2. Select individual bill pages to ensure pagination works flawlessly
+    const pages = element.querySelectorAll('.bill-page');
+    if (pages.length === 0) return;
+
+    for (let i = 0; i < pages.length; i++) {
+      if (i > 0) {
+        pdf.addPage([105, 148], 'portrait');
+      }
+      
+      const pageEl = pages[i] as HTMLElement;
+      
+      // 3. Render high-res crisp canvas
+      const canvas = await html2canvas(pageEl, {
         scale: 4, 
         windowWidth: 397,
-        useCORS: true 
-      },
-      jsPDF: { 
-        unit: 'mm', 
-        format: [105, 148], // STRICT A6
-        orientation: 'portrait' 
-      }
-    };
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      });
+      
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      
+      // 4. MAP PROPORTIONALLY (Do NOT stretch to 148mm if aspect ratio differs by 0.1mm)
+      const pdfWidth = 105;
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+    }
     
-    // Generate PDF blob
-    html2pdf().set(opt).from(element).output('bloburl').then(function(pdfUrl: string) {
-      const printWindow = window.open(pdfUrl, '_blank');
-      if (printWindow) {
-        // We cannot listen to afterprint on a PDF viewer tab easily, 
-        // so we reset the state immediately after it opens.
-        setSuccessBill(null);
-        setRequestId(crypto.randomUUID());
-      } else {
-        alert("Please allow pop-ups to print the bill.");
-      }
-    });
+    // 5. Output and Print
+    const pdfUrl = pdf.output('bloburl');
+    const printWindow = window.open(pdfUrl, '_blank');
+    if (printWindow) {
+      setSuccessBill(null);
+      setRequestId(crypto.randomUUID());
+    } else {
+      alert("Please allow pop-ups to print the bill.");
+    }
   }
 
   const handleSearch = (query: string, rowIndex: number) => {
