@@ -55,26 +55,51 @@ export default function NewBill() {
     }
   }, [successBill])
 
-  const generatePDF = async () => {
+  const generatePDF = () => {
     const element = document.getElementById('paper-bill-container');
     if (!element) return;
 
-    try {
-      const html2pdf = (await import('html2pdf.js')).default;
-      const opt = {
-        margin: 0,
-        filename: `Bill_${successBill?.billNumber || 'receipt'}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: [105.1, 148.1], orientation: 'portrait' }
-      };
-
-      // Generate A6 PDF blob and save directly (bypasses Chrome print dialog completely)
-      html2pdf().set(opt).from(element).save();
-    } catch (err) {
-      console.error('PDF generation error:', err);
-      alert("Failed to generate PDF.");
+    const origin = window.location.origin;
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert("Please allow pop-ups to print the bill.");
+      return;
     }
+
+    printWindow.document.open();
+    printWindow.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Bill_${successBill?.billNumber || 'receipt'}</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: white; }
+  @page { size: 105mm 148mm; margin: 0; }
+  @media print {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .bill-page + .bill-page { page-break-before: always; break-before: page; }
+</style>
+</head>
+<body>
+${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"/g, '')}
+</body>
+</html>`);
+    printWindow.document.close();
+
+    const imgs = Array.from(printWindow.document.querySelectorAll('img'));
+    const loaded = imgs.map(img =>
+      img.complete ? Promise.resolve() : new Promise<void>(res => { img.onload = () => res(); img.onerror = () => res(); })
+    );
+
+    Promise.all(loaded).then(() => {
+      setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+      }, 300);
+    });
   }
 
   const handleSearch = (query: string, rowIndex: number) => {
