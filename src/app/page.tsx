@@ -102,6 +102,12 @@ ${clone.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"
     );
 
     Promise.all(loaded).then(() => {
+      printWindow.onafterprint = () => {
+        printWindow.close();
+        setSuccessBill(null);
+        setRequestId(crypto.randomUUID());
+      };
+      
       setTimeout(() => {
         printWindow.focus();
         printWindow.print();

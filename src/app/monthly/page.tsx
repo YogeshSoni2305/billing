@@ -57,6 +57,11 @@ ${clone.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"
       img.complete ? Promise.resolve() : new Promise<void>(res => { img.onload = () => res(); img.onerror = () => res(); })
     );
     Promise.all(loaded).then(() => {
+      printWindow.onafterprint = () => {
+        printWindow.close();
+        setViewingBill(null);
+      };
+
       setTimeout(() => {
         printWindow.focus();
         printWindow.print();

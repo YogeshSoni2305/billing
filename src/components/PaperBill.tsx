@@ -71,21 +71,6 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
       margin: '0 auto',
     }}>
 
-      {/* WATERMARK */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        pointerEvents: 'none', overflow: 'hidden',
-      }}>
-        <span style={{
-          transform: 'rotate(-45deg)',
-          color: 'rgba(0,0,0,0.04)',
-          fontSize: 72, fontWeight: 900,
-          letterSpacing: 8, whiteSpace: 'nowrap',
-          fontFamily: FONT,
-        }}>FINOLEX</span>
-      </div>
-
       {/* ── HEADER ─────────────────────────────────────────────────── */}
       <div style={{ height: HEADER_H, flexShrink: 0, display: 'flex', alignItems: 'flex-start', marginBottom: G1 }}>
         {/* left spacer: 100px */}
