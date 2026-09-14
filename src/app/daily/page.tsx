@@ -19,22 +19,24 @@ export default function DailySummary() {
     if (!element) return;
 
     try {
-      const html2pdf = (await import('html2pdf.js')).default;
-      const opt = {
-        margin: 0,
-        filename: `Bill_${viewingBill?.billNumber || 'receipt'}.pdf`,
-        image: { type: 'jpeg', quality: 1.0 },
-        html2canvas: { 
-          scale: 4, 
-          useCORS: true, 
-          logging: false,
-          windowWidth: 397,
-          width: 397
-        },
-        jsPDF: { unit: 'mm', format: [105.1, 148.1], orientation: 'portrait' }
-      };
+      const { jsPDF } = await import('jspdf');
+      
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [105.1, 148.1],
+      });
 
-      html2pdf().set(opt).from(element).save();
+      await pdf.html(element, {
+        x: 0,
+        y: 0,
+        width: 105.1,
+        windowWidth: 397,
+        margin: 0,
+        autoPaging: 'text',
+      });
+
+      pdf.save(`Bill_${viewingBill?.billNumber || 'receipt'}.pdf`);
     } catch (err) {
       console.error('PDF generation error:', err);
       alert("Failed to generate PDF.");
