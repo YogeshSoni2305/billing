@@ -14,31 +14,47 @@ export default function DailySummary() {
   const [viewingBill, setViewingBill] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
-  const generatePDF = async () => {
+  const generatePDF = () => {
     const element = document.getElementById('modal-paper-bill-container');
     if (!element) return;
 
-    try {
-      const html2pdf = (await import('html2pdf.js')).default;
-      const opt = {
-        margin: 0,
-        filename: `Bill_${viewingBill?.billNumber || 'receipt'}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: [105.1, 148.1], orientation: 'portrait' }
-      };
-
-      const pdf = await html2pdf().set(opt).from(element).toPdf().get('pdf');
-      const blobUrl = pdf.output('bloburl');
-      const printWindow = window.open(blobUrl, '_blank');
-      if (printWindow) {
-        printWindow.focus();
-      } else {
-        html2pdf().set(opt).from(element).save();
-      }
-    } catch (err) {
-      console.error('PDF generation error:', err);
+    const origin = window.location.origin;
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert("Please allow pop-ups to print the bill.");
+      return;
     }
+
+    printWindow.document.open();
+    printWindow.document.write(`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Bill_${viewingBill?.billNumber || 'receipt'}</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: white; }
+  @page { size: 105.1mm 148.1mm; margin: 0; }
+  @media print { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .bill-page + .bill-page { page-break-before: always; break-before: page; }
+</style>
+</head>
+<body>
+${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"/g, '')}
+</body>
+</html>`);
+    printWindow.document.close();
+
+    const imgs = Array.from(printWindow.document.querySelectorAll('img'));
+    const loaded = imgs.map(img =>
+      img.complete ? Promise.resolve() : new Promise<void>(res => { img.onload = () => res(); img.onerror = () => res(); })
+    );
+    Promise.all(loaded).then(() => {
+      setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+      }, 300);
+    });
   }
 
 
