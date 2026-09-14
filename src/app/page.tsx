@@ -55,55 +55,32 @@ export default function NewBill() {
     }
   }, [successBill])
 
-  const generatePDF = () => {
+  const generatePDF = async () => {
     const element = document.getElementById('paper-bill-container');
     if (!element) return;
 
-    const iframe = document.createElement('iframe');
-    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:397px;height:1200px;border:none;visibility:hidden;';
-    document.body.appendChild(iframe);
+    try {
+      const html2pdf = (await import('html2pdf.js')).default;
+      const opt = {
+        margin: 0,
+        filename: `Bill_${successBill?.billNumber || 'receipt'}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: [105.1, 148.1], orientation: 'portrait' }
+      };
 
-    const doc = iframe.contentDocument!;
-    const origin = window.location.origin;
-
-    // Inline all styles so the iframe renders identically
-    doc.open();
-    doc.write(`<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<style>
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: white; }
-  @page { size: 105.1mm 148.1mm; margin: 0; }
-  @media print {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  .bill-page + .bill-page { page-break-before: always; break-before: page; }
-
-</style>
-</head>
-<body>
-${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"/g, '')}
-</body>
-</html>`);
-    doc.close();
-
-    // Wait for images then print
-    const imgs = Array.from(doc.querySelectorAll('img'));
-    const loaded = imgs.map(img =>
-      img.complete ? Promise.resolve() : new Promise<void>(res => { img.onload = () => res(); img.onerror = () => res(); })
-    );
-
-    Promise.all(loaded).then(() => {
-      setTimeout(() => {
-        iframe.style.visibility = 'visible';
-        iframe.contentWindow!.focus();
-        iframe.contentWindow!.print();
-        setTimeout(() => { if (document.body.contains(iframe)) document.body.removeChild(iframe); }, 2000);
-      }, 300);
-    });
+      // Generate A6 PDF blob and open/print directly
+      const pdf = await html2pdf().set(opt).from(element).toPdf().get('pdf');
+      const blobUrl = pdf.output('bloburl');
+      const printWindow = window.open(blobUrl, '_blank');
+      if (printWindow) {
+        printWindow.focus();
+      } else {
+        html2pdf().set(opt).from(element).save();
+      }
+    } catch (err) {
+      console.error('PDF generation error:', err);
+    }
   }
 
   const handleSearch = (query: string, rowIndex: number) => {
