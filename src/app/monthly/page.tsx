@@ -53,13 +53,17 @@ ${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]
     );
     Promise.all(loaded).then(() => {
       setTimeout(() => {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
-        
-        setTimeout(() => {
-          document.body.removeChild(iframe);
-          setViewingBill(null);
-        }, 1000);
+        const cw = iframe.contentWindow;
+        if (cw) {
+          cw.addEventListener('afterprint', () => {
+            if (document.body.contains(iframe)) {
+              document.body.removeChild(iframe);
+            }
+            setViewingBill(null);
+          });
+          cw.focus();
+          cw.print();
+        }
       }, 300);
     });
   }
