@@ -55,61 +55,40 @@ export default function NewBill() {
     }
   }, [successBill])
 
-  const generatePDF = () => {
+  const generatePDF = async () => {
     const element = document.getElementById('paper-bill-container');
     if (!element) return;
-
-    const origin = window.location.origin;
-
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-
-    const doc = iframe.contentWindow?.document;
-    if (!doc) return;
-
-    doc.open();
-    doc.write(`<!DOCTYPE html>
-<html>
-<head>
-<title>Bill_${successBill?.billNumber || 'receipt'}</title>
-<style>
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; width: 105mm; height: 148mm; background: white; }
-  @page { size: 105mm 148mm; margin: 0; }
-  @media print {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  .bill-page + .bill-page { page-break-before: always; break-before: page; }
-</style>
-</head>
-<body>
-${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"/g, '')}
-</body>
-</html>`);
-    doc.close();
-
-    const imgs = Array.from(doc.querySelectorAll('img'));
-    const loaded = imgs.map(img =>
-      img.complete ? Promise.resolve() : new Promise<void>(res => { img.onload = () => res(); img.onerror = () => res(); })
-    );
-
-    Promise.all(loaded).then(() => {
-      setTimeout(() => {
-        const cw = iframe.contentWindow;
-        if (cw) {
-          cw.addEventListener('afterprint', () => {
-            if (document.body.contains(iframe)) {
-              document.body.removeChild(iframe);
-            }
-            setSuccessBill(null);
-            setRequestId(crypto.randomUUID());
-          });
-          cw.focus();
-          cw.print();
-        }
-      }, 300);
+    
+    // Dynamically import to avoid SSR issues
+    const html2pdf = (await import('html2pdf.js')).default;
+    
+    const opt = {
+      margin:       0,
+      filename:     `Bill_${successBill?.billNumber || 'receipt'}.pdf`,
+      image:        { type: 'jpeg', quality: 1 },
+      html2canvas:  { 
+        scale: 4, 
+        windowWidth: 397,
+        useCORS: true 
+      },
+      jsPDF: { 
+        unit: 'mm', 
+        format: [105, 148], // STRICT A6
+        orientation: 'portrait' 
+      }
+    };
+    
+    // Generate PDF blob
+    html2pdf().set(opt).from(element).output('bloburl').then(function(pdfUrl: string) {
+      const printWindow = window.open(pdfUrl, '_blank');
+      if (printWindow) {
+        // We cannot listen to afterprint on a PDF viewer tab easily, 
+        // so we reset the state immediately after it opens.
+        setSuccessBill(null);
+        setRequestId(crypto.randomUUID());
+      } else {
+        alert("Please allow pop-ups to print the bill.");
+      }
     });
   }
 
