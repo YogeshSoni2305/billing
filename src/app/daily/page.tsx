@@ -35,14 +35,20 @@ export default function DailySummary() {
 <title>Bill_${viewingBill?.billNumber || 'receipt'}</title>
 <style>
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; width: 105mm; height: 148mm; background: white; }
+  html, body { 
+    margin: 0; padding: 0; width: 100%; height: 100%; 
+    background: white; 
+    display: flex; justify-content: center; align-items: flex-start;
+  }
   @page { size: 105mm 148mm; margin: 0; }
   @media print { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   .bill-page + .bill-page { page-break-before: always; break-before: page; }
 </style>
 </head>
 <body>
-${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"/g, '')}
+  <div style="width: 105mm; height: 148mm; display: flex; justify-content: center;">
+    ${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"/g, '')}
+  </div>
 </body>
 </html>`);
     doc.close();
