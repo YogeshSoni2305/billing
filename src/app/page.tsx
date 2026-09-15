@@ -65,9 +65,9 @@ export default function NewBill() {
     const opt = {
       margin:       0,
       filename:     `Invoice-${successBill?.billNumber || 'New'}.pdf`,
-      image:        { type: 'jpeg', quality: 1 },
+      image:        { type: 'jpeg' as const, quality: 1 },
       html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm', format: 'a6', orientation: 'portrait' },
+      jsPDF:        { unit: 'mm' as const, format: 'a6' as const, orientation: 'portrait' as const },
       pagebreak:    { mode: 'css', before: '.bill-page + .bill-page' }
     };
 

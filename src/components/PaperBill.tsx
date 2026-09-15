@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-export default function PaperBill({ billNumber, date, customerName, customerMobile, storeName = 'SAGAR ELECTRICALS', items, isMerchant, narration }: any) {
+export default function PaperBill({ billNumber, date, customerName, customerMobile, storeName = 'SAGAR ELECTRICALS', items, isMerchant }: any) {
   
   const MIN_ROWS = 17
   const displayItems = [...(items || [])]
@@ -26,39 +26,39 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
     : "grid-cols-[40px_1fr_60px_70px]"
 
   return (
-    <div className="bill-page w-[396px] min-h-[561px] bg-white text-[#0f172a] relative mx-auto flex flex-col p-4 text-[10px] font-sans box-border overflow-hidden">
+    <div className="bill-page w-[396px] h-[561px] bg-white text-[#0f172a] relative mx-auto flex flex-col py-2 px-3 text-[10px] font-sans box-border overflow-hidden">
       
       {/* Merchant / Customer Copy Badge */}
-      <div className="absolute top-4 right-4 text-[9px] font-bold text-[#94a3b8] border border-[#cbd5e1] px-1.5 py-0.5 uppercase rounded-sm">
+      <div className="absolute top-2 right-3 text-[8px] font-bold text-[#94a3b8] border border-[#cbd5e1] px-1 py-0.5 uppercase rounded-sm">
         {isMerchant ? 'Merchant Copy' : 'Customer Copy'}
       </div>
       
       {/* Header */}
-      <div className="text-center mb-4 flex flex-col items-center shrink-0">
-        <div className="w-[40px] h-[40px] relative">
-          <Image src="/ganesha.png" alt="Ganesha" fill sizes="40px" style={{ objectFit: 'contain' }} priority />
+      <div className="text-center mb-2 flex flex-col items-center shrink-0">
+        <div className="w-[32px] h-[32px] relative">
+          <Image src="/ganesha.png" alt="Ganesha" fill sizes="32px" style={{ objectFit: 'contain' }} priority />
         </div>
-        <h2 className="font-bold text-sm leading-tight mt-1">Quotation</h2>
-        <h3 className="uppercase tracking-widest text-[8px] text-[#64748b]">INVOICE</h3>
-        {storeName && <h1 className="font-bold text-base tracking-wide mt-1 text-[#1e3a8a]">{storeName}</h1>}
+        <h2 className="font-bold text-[12px] leading-tight mt-0.5">Quotation</h2>
+        <h3 className="uppercase tracking-widest text-[7px] text-[#64748b]">INVOICE</h3>
+        {storeName && <h1 className="font-bold text-[13px] tracking-wide mt-0.5 text-[#1e3a8a]">{storeName}</h1>}
       </div>
 
       {/* Bill Meta */}
-      <div className="flex justify-between font-semibold mb-3 text-[10px] shrink-0 px-1">
+      <div className="flex justify-between font-semibold mb-2 text-[9px] shrink-0 px-1">
         <div>No.: <span className="font-normal text-[#64748b]">{billNumber}</span></div>
         <div>Date: <span className="font-normal text-[#64748b]">{date}</span></div>
       </div>
 
-      <div className="flex flex-col gap-1.5 mb-3 text-[10px] shrink-0 px-1">
+      <div className="flex flex-col gap-1 mb-2 text-[9px] shrink-0 px-1">
         <div className="flex items-center gap-2">
-          <div className="font-semibold w-8">M/s:</div>
-          <div className="flex-1 border-b border-dashed border-[#d1d5db] pb-0.5 min-h-[16px] flex items-end">
+          <div className="font-semibold w-7">M/s:</div>
+          <div className="flex-1 border-b border-dashed border-[#d1d5db] pb-0.5 min-h-[14px] flex items-end">
             {isMerchant && customerName ? customerName : <span className="text-[#cbd5e1]"></span>}
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <div className="font-semibold w-8">Mob:</div>
-          <div className="flex-1 border-b border-dashed border-[#d1d5db] pb-0.5 min-h-[16px] flex items-end">
+          <div className="font-semibold w-7">Mob:</div>
+          <div className="flex-1 border-b border-dashed border-[#d1d5db] pb-0.5 min-h-[14px] flex items-end">
             {isMerchant && customerMobile ? customerMobile : <span className="text-[#cbd5e1]"></span>}
           </div>
         </div>
@@ -79,11 +79,11 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
         {/* Table Body */}
         <div className="flex flex-col flex-1 divide-y divide-[#e2e8f0]">
           {displayItems.map((item, idx) => (
-            <div key={idx} className={`grid ${gridColsClass} divide-x divide-[#e2e8f0] min-h-[22px]`}>
+            <div key={idx} className={`grid ${gridColsClass} divide-x divide-[#e2e8f0] h-[19px]`}>
               {!item._empty ? (
                 <>
                   <div className="p-0.5 flex items-center justify-center font-medium leading-tight">{item.quantity}</div>
-                  <div className="px-1.5 py-0.5 flex items-center uppercase leading-tight break-all overflow-hidden">{item.product_name}</div>
+                  <div className="px-1.5 py-0.5 flex items-center uppercase leading-tight whitespace-nowrap overflow-hidden text-ellipsis">{item.product_name}</div>
                   <div className="px-1.5 py-0.5 flex items-center justify-end font-medium leading-tight">{item.rate.toFixed(2)}</div>
                   {hasDiscount && (
                     <div className="px-1.5 py-0.5 flex items-center justify-end font-medium leading-tight">
@@ -117,14 +117,6 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
             <div className="text-[#64748b] text-[8px]">{grandTotal.toFixed(2)}</div>
             <div className="font-bold text-[#10b981] text-[10px]">{grandTotal.toFixed(2)}</div>
           </div>
-        </div>
-      </div>
-
-      {/* Footer Note */}
-      <div className="mt-3 flex items-start gap-2 shrink-0 px-1">
-        <div className="font-semibold w-8 pt-0.5">Note:</div>
-        <div className="flex-1 border-b border-dashed border-[#d1d5db] pb-0.5 min-h-[16px] flex items-end leading-tight break-all">
-          {narration}
         </div>
       </div>
 
