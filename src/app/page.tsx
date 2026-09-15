@@ -55,63 +55,59 @@ export default function NewBill() {
     }
   }, [successBill])
 
-  const generatePDF = () => {
+  const generatePDF = async () => {
     const element = document.getElementById('paper-bill-container');
     if (!element) return;
 
-    const origin = window.location.origin;
+    const html2canvas = (await import('html2canvas')).default;
+    const { jsPDF } = await import('jspdf');
 
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
+    // Select each bill-page separately so we can add them as individual PDF pages.
+    // This handles both Customer Copy and Merchant Copy correctly.
+    const pages = Array.from(element.querySelectorAll<HTMLElement>('.bill-page'));
+    if (pages.length === 0) return;
 
-    const doc = iframe.contentWindow?.document;
-    if (!doc) return;
-
-    doc.open();
-    doc.write(`<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Bill_${successBill?.billNumber || 'receipt'}</title>
-<style>
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; width: 105mm; height: 148mm; background: white; }
-  @page { size: 105mm 148mm; margin: 0; }
-  @media print {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  .bill-page + .bill-page { page-break-before: always; break-before: page; }
-</style>
-</head>
-<body>
-${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"/g, '')}
-</body>
-</html>`);
-    doc.close();
-
-    const imgs = Array.from(doc.querySelectorAll('img'));
-    const loaded = imgs.map(img =>
-      img.complete ? Promise.resolve() : new Promise<void>(res => { img.onload = () => res(); img.onerror = () => res(); })
-    );
-
-    Promise.all(loaded).then(() => {
-      setTimeout(() => {
-        const cw = iframe.contentWindow;
-        if (cw) {
-          cw.addEventListener('afterprint', () => {
-            if (document.body.contains(iframe)) {
-              document.body.removeChild(iframe);
-            }
-            setSuccessBill(null);
-            setRequestId(crypto.randomUUID());
-          });
-          cw.focus();
-          cw.print();
-        }
-      }, 300);
+    // Create the PDF with EXACT A6 MediaBox = [0 0 297.638 419.528] pt
+    // macOS print system maps this MediaBox to the named paper "A6",
+    // so the Canon LBP6030 XPS driver receives PageMediaSize: A6 in its print ticket.
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: [105, 148],   // exact A6 — no @page CSS hacks needed
     });
+
+    for (let i = 0; i < pages.length; i++) {
+      if (i > 0) pdf.addPage([105, 148], 'portrait');
+
+      // Capture at scale:4 with locked 397×560 viewport.
+      // Canvas will be 1588×2240 px. AR mismatch vs A6 = 0.075% (0.078mm — sub-pixel, invisible).
+      const canvas = await html2canvas(pages[i], {
+        scale: 4,
+        width: 397,        // lock to exact PaperBill container width — no viewport bleed
+        height: 560,       // lock to exact PaperBill container height
+        windowWidth: 397,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+      });
+
+      // Place image at exactly 0,0 covering the full 105×148mm page.
+      // jsPDF clips at the MediaBox boundary — no content is lost because
+      // our 560px height maps to 148.03mm, only 0.03mm over the 148mm boundary.
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      pdf.addImage(imgData, 'JPEG', 0, 0, 105, 148);
+    }
+
+    // Open as a real PDF blob in a new tab.
+    // macOS Preview / Chrome PDF viewer will read the MediaBox and send a named-A6 job
+    // to the Canon driver — exactly the same path as Bill 22.
+    const pdfUrl = pdf.output('bloburl');
+    const win = window.open(pdfUrl as unknown as string, '_blank');
+    if (win) {
+      setSuccessBill(null);
+      setRequestId(crypto.randomUUID());
+    } else {
+      alert('Please allow pop-ups to print the bill.');
+    }
   }
 
   const handleSearch = (query: string, rowIndex: number) => {

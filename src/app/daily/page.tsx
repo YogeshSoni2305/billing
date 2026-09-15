@@ -14,58 +14,45 @@ export default function DailySummary() {
   const [viewingBill, setViewingBill] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
-  const generatePDF = () => {
+  const generatePDF = async () => {
     const element = document.getElementById('modal-paper-bill-container');
     if (!element) return;
 
-    const origin = window.location.origin;
+    const html2canvas = (await import('html2canvas')).default;
+    const { jsPDF } = await import('jspdf');
 
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
+    const pages = Array.from(element.querySelectorAll<HTMLElement>('.bill-page'));
+    if (pages.length === 0) return;
 
-    const doc = iframe.contentWindow?.document;
-    if (!doc) return;
-
-    doc.open();
-    doc.write(`<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Bill_${viewingBill?.billNumber || 'receipt'}</title>
-<style>
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; width: 105mm; height: 148mm; background: white; }
-  @page { size: 105mm 148mm; margin: 0; }
-  @media print { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-  .bill-page + .bill-page { page-break-before: always; break-before: page; }
-</style>
-</head>
-<body>
-${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"/g, '')}
-</body>
-</html>`);
-    doc.close();
-
-    const imgs = Array.from(doc.querySelectorAll('img'));
-    const loaded = imgs.map(img =>
-      img.complete ? Promise.resolve() : new Promise<void>(res => { img.onload = () => res(); img.onerror = () => res(); })
-    );
-    Promise.all(loaded).then(() => {
-      setTimeout(() => {
-        const cw = iframe.contentWindow;
-        if (cw) {
-          cw.addEventListener('afterprint', () => {
-            if (document.body.contains(iframe)) {
-              document.body.removeChild(iframe);
-            }
-            setViewingBill(null);
-          });
-          cw.focus();
-          cw.print();
-        }
-      }, 300);
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: [105, 148],
     });
+
+    for (let i = 0; i < pages.length; i++) {
+      if (i > 0) pdf.addPage([105, 148], 'portrait');
+
+      const canvas = await html2canvas(pages[i], {
+        scale: 4,
+        width: 397,
+        height: 560,
+        windowWidth: 397,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+      });
+
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      pdf.addImage(imgData, 'JPEG', 0, 0, 105, 148);
+    }
+
+    const pdfUrl = pdf.output('bloburl');
+    const win = window.open(pdfUrl as unknown as string, '_blank');
+    if (win) {
+      setViewingBill(null);
+    } else {
+      alert('Please allow pop-ups to print the bill.');
+    }
   }
 
 
