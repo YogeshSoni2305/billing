@@ -19,7 +19,6 @@ export default function DailySummary() {
     if (!element) return;
 
     const html2pdf = (await import('html2pdf.js')).default;
-    const printJS = (await import('print-js')).default;
     
     const opt = {
       margin:       0,
@@ -30,9 +29,7 @@ export default function DailySummary() {
       pagebreak:    { mode: 'css', before: '.bill-page + .bill-page' }
     };
 
-    html2pdf().set(opt).from(element).output('bloburl').then((pdfUrl: string) => {
-      printJS({ printable: pdfUrl, type: 'pdf', showModal: false });
-    });
+    html2pdf().set(opt).from(element).save();
   }
 
 

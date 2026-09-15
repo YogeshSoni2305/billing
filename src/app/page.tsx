@@ -57,7 +57,6 @@ export default function NewBill() {
     if (!element) return;
 
     const html2pdf = (await import('html2pdf.js')).default;
-    const printJS = (await import('print-js')).default;
     
     const opt = {
       margin:       0,
@@ -68,10 +67,9 @@ export default function NewBill() {
       pagebreak:    { mode: 'css', before: '.bill-page + .bill-page' }
     };
 
-    html2pdf().set(opt).from(element).output('bloburl').then((pdfUrl: string) => {
-      // Seamlessly print the PDF blob in the background without opening a new tab
-      printJS({ printable: pdfUrl, type: 'pdf', showModal: false });
-    });
+    // Use .save() to trigger a direct download, which preserves the exact A6 MediaBox
+    // Unlike window.print() or printJS, this prevents Chrome from forcing the A4 default paper size
+    html2pdf().set(opt).from(element).save();
   }
 
   const handleSearch = (query: string, rowIndex: number) => {
