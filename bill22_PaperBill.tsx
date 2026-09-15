@@ -2,7 +2,7 @@ import Image from 'next/image'
 
 export default function PaperBill({ billNumber, date, customerName, customerMobile, storeName = 'SAGAR ELECTRICALS', items, isMerchant, narration }: any) {
   
-  const MIN_ROWS = 17
+  const MIN_ROWS = 10
   const displayItems = [...(items || [])]
   while (displayItems.length < MIN_ROWS) {
     displayItems.push({ _empty: true })
@@ -26,7 +26,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
     : "grid-cols-[40px_1fr_60px_70px]"
 
   return (
-    <div className="bill-page w-[396px] min-h-[561px] bg-white text-[#0f172a] relative mx-auto flex flex-col p-4 text-[10px] font-sans box-border overflow-hidden">
+    <div className="w-[396px] min-h-[561px] bg-white text-[#0f172a] relative mx-auto flex flex-col p-4 text-[10px] font-sans box-border overflow-hidden">
       
       {/* Merchant / Customer Copy Badge */}
       <div className="absolute top-4 right-4 text-[9px] font-bold text-[#94a3b8] border border-[#cbd5e1] px-1.5 py-0.5 uppercase rounded-sm">
