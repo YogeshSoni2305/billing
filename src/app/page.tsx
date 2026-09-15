@@ -94,7 +94,11 @@ export default function NewBill() {
       // jsPDF clips at the MediaBox boundary — no content is lost because
       // our 560px height maps to 148.03mm, only 0.03mm over the 148mm boundary.
       const imgData = canvas.toDataURL('image/jpeg', 1.0);
-      pdf.addImage(imgData, 'JPEG', 0, 0, 105, 148);
+      // Map proportionally: width locked to 105mm, height derived from canvas ratio.
+      // This guarantees ZERO aspect-ratio distortion — no horizontal or vertical stretch.
+      // The ~0.035mm height overage over 148mm clips invisibly at the PDF page boundary.
+      const imgH = (canvas.height / canvas.width) * 105;
+      pdf.addImage(imgData, 'JPEG', 0, 0, 105, imgH);
     }
 
     // Open as a real PDF blob in a new tab.

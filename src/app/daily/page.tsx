@@ -43,7 +43,8 @@ export default function DailySummary() {
       });
 
       const imgData = canvas.toDataURL('image/jpeg', 1.0);
-      pdf.addImage(imgData, 'JPEG', 0, 0, 105, 148);
+      const imgH = (canvas.height / canvas.width) * 105;
+      pdf.addImage(imgData, 'JPEG', 0, 0, 105, imgH);
     }
 
     const pdfUrl = pdf.output('bloburl');

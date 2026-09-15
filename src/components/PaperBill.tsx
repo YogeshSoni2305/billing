@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-export default function PaperBill({ billNumber, date, customerName, customerMobile, storeName = 'SAGAR ELECTRICALS', items, isMerchant, narration }: any) {
+export default function PaperBill({ billNumber, date, customerName, customerMobile, storeName = 'SAGAR ELECTRICALS', items, isMerchant }: any) {
   // ─── GEOMETRY (all in px, A6 = 397 × 560 max) ──────────────────────────────
   const PX = 10  // horizontal padding
   const PY = 6   // vertical top + bottom padding
@@ -10,19 +10,17 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
   const CUSTOMER_H = 26   // M/s + Mobile
   const TBL_HEAD_H = 16   // column labels
   const TBL_FOOT_H = 22   // Total qty / Net amount
-  const NOTE_H     = 14   // Note row
+  // NOTE ROW REMOVED — freed 16px redistributed to data rows
 
   const G1 = 3  // after header
   const G2 = 2  // after meta
   const G3 = 2  // after customer
-  const G4 = 2  // between table and note
 
   const MIN_ROWS = 17
   const usedPx = PY + HEADER_H + G1 + META_H + G2 + CUSTOMER_H + G3
-               + TBL_HEAD_H + TBL_FOOT_H + G4 + NOTE_H + PY + 2
-  // We use the full 560px height (minus used space) so rows aren't squished
+               + TBL_HEAD_H + TBL_FOOT_H + PY
   const availableForRows = 560 - usedPx
-  const ROW_H = Math.floor(availableForRows / MIN_ROWS) // ~23px
+  const ROW_H = Math.floor(availableForRows / MIN_ROWS) // ~25px — roomier rows
 
   const displayItems = [...(items || [])]
   while (displayItems.length < MIN_ROWS) displayItems.push({ _empty: true })
@@ -220,14 +218,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
         </div>
       </div>
 
-      {/* ── NOTE ───────────────────────────────────────────────────── */}
-      <div style={{ height: NOTE_H, flexShrink: 0, display: 'flex', alignItems: 'flex-end', gap: 6, marginTop: G4 }}>
-        <span style={{ fontWeight: 600, fontSize: 8.5, width: 28, flexShrink: 0 }}>Note:</span>
-        <span style={{
-          flex: 1, borderBottom: '1px dashed #d1d5db', paddingBottom: 1,
-          fontSize: 8.5, lineHeight: 1, display: 'flex', alignItems: 'flex-end',
-        }}>{narration}</span>
-      </div>
+
 
     </div>
   )
