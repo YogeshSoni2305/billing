@@ -22,16 +22,14 @@ export default function MonthlySummary() {
     
     const opt = {
       margin:       0,
-      filename:     `Invoice-${viewingBill?.billNumber || 'New'}.pdf`,
-      image:        { type: 'jpeg' as const, quality: 1 },
+      filename:     `Invoice-${viewingBill?.bill_number || 'New'}.pdf`,
+      image:        { type: 'jpeg', quality: 1 },
       html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm' as const, format: 'a6' as const, orientation: 'portrait' as const },
+      jsPDF:        { unit: 'mm', format: [99.8, 148.2], orientation: 'portrait' },
       pagebreak:    { mode: 'css', before: '.bill-page + .bill-page' }
     };
 
-    html2pdf().set(opt).from(element).output('bloburl').then((pdfUrl: string) => {
-      window.open(pdfUrl, '_blank');
-    });
+    html2pdf().set(opt).from(element).save();
   }
 
 
@@ -158,7 +156,7 @@ export default function MonthlySummary() {
       >
         <div className="flex justify-center -mx-6 -mt-2">
           {viewingBill ? (
-            <div id="modal-paper-bill-container" style={{ width: 397 }} className="flex flex-col items-center">
+            <div id="modal-paper-bill-container" style={{ width: 377 }} className="flex flex-col items-center">
               <PaperBill 
                 billNumber={viewingBill.bill_number}
                 date={new Date(viewingBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-')}

@@ -2,7 +2,7 @@ import Image from 'next/image'
 
 export default function PaperBill({ billNumber, date, customerName, customerMobile, storeName = 'SAGAR ELECTRICALS', items, isMerchant }: any) {
   
-  const MIN_ROWS = 17
+  const MIN_ROWS = 18
   const displayItems = [...(items || [])]
   while (displayItems.length < MIN_ROWS) {
     displayItems.push({ _empty: true })
@@ -20,13 +20,13 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
     return false;
   })
 
-  // Fixed widths for perfectly rendering within a 396px container (A6 width)
+  // Fixed widths for perfectly rendering within a 377px container (Postcard width)
   const gridColsClass = hasDiscount 
     ? "grid-cols-[35px_1fr_50px_40px_60px]" 
     : "grid-cols-[40px_1fr_60px_70px]"
 
   return (
-    <div className="bill-page w-[396px] h-[561px] bg-white text-[#0f172a] relative mx-auto flex flex-col py-2 px-3 text-[10px] font-sans box-border overflow-hidden">
+    <div className="bill-page w-[377px] h-[560px] bg-white text-[#0f172a] relative mx-auto flex flex-col py-2 px-3 text-[10px] font-sans box-border overflow-hidden">
       
       {/* Merchant / Customer Copy Badge */}
       <div className="absolute top-2 right-3 text-[8px] font-bold text-[#94a3b8] border border-[#cbd5e1] px-1 py-0.5 uppercase rounded-sm">
@@ -79,7 +79,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
         {/* Table Body */}
         <div className="flex flex-col flex-1 divide-y divide-[#e2e8f0]">
           {displayItems.map((item, idx) => (
-            <div key={idx} className={`grid ${gridColsClass} divide-x divide-[#e2e8f0] h-[19px]`}>
+            <div key={idx} className={`grid ${gridColsClass} divide-x divide-[#e2e8f0] h-[18px]`}>
               {!item._empty ? (
                 <>
                   <div className="p-0.5 flex items-center justify-center font-medium leading-tight">{item.quantity}</div>

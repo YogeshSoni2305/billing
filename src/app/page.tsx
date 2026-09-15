@@ -56,22 +56,27 @@ export default function NewBill() {
     const element = document.getElementById('paper-bill-container');
     if (!element) return;
 
+    // Temporary development check
+    const rect = element.getBoundingClientRect();
+    console.log({
+      width: rect.width,
+      height: rect.height,
+      scrollWidth: element.scrollWidth,
+      scrollHeight: element.scrollHeight,
+    });
+
     const html2pdf = (await import('html2pdf.js')).default;
     
     const opt = {
       margin:       0,
-      filename:     `Invoice-${successBill?.billNumber || 'New'}.pdf`,
-      image:        { type: 'jpeg' as const, quality: 1 },
+      filename:     `Invoice-${successBill?.bill_number || 'New'}.pdf`,
+      image:        { type: 'jpeg', quality: 1 },
       html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm' as const, format: 'a6' as const, orientation: 'portrait' as const },
+      jsPDF:        { unit: 'mm', format: [99.8, 148.2], orientation: 'portrait' },
       pagebreak:    { mode: 'css', before: '.bill-page + .bill-page' }
     };
 
-    // Open the PDF in a new tab to avoid downloading to the user's computer,
-    // while allowing Chrome's native PDF Viewer to handle the A6 print job properly.
-    html2pdf().set(opt).from(element).output('bloburl').then((pdfUrl: string) => {
-      window.open(pdfUrl, '_blank');
-    });
+    html2pdf().set(opt).from(element).save();
   }
 
   const handleSearch = (query: string, rowIndex: number) => {
@@ -193,7 +198,7 @@ export default function NewBill() {
             <Plus size={16} className="mr-2" /> New Bill
           </Button>
         </div>
-        <div id="paper-bill-container" style={{ width: 397 }} className="flex flex-col items-center">
+        <div id="paper-bill-container" style={{ width: 377 }} className="flex flex-col items-center">
           <PaperBill 
             billNumber={successBill.bill_number}
             date={new Date(successBill.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }).replace(/ /g, '-')}
