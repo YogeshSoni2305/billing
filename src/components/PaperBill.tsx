@@ -20,8 +20,9 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
   const MIN_ROWS = 17
   const usedPx = PY + HEADER_H + G1 + META_H + G2 + CUSTOMER_H + G3
                + TBL_HEAD_H + TBL_FOOT_H + G4 + NOTE_H + PY + 2
-  const availableForRows = 525 - usedPx
-  const ROW_H = Math.floor(availableForRows / MIN_ROWS) // ~21px
+  // We use the full 560px height (minus used space) so rows aren't squished
+  const availableForRows = 560 - usedPx
+  const ROW_H = Math.floor(availableForRows / MIN_ROWS) // ~23px
 
   const displayItems = [...(items || [])]
   while (displayItems.length < MIN_ROWS) displayItems.push({ _empty: true })

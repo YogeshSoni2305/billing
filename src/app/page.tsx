@@ -55,58 +55,63 @@ export default function NewBill() {
     }
   }, [successBill])
 
-  const generatePDF = async () => {
+  const generatePDF = () => {
     const element = document.getElementById('paper-bill-container');
     if (!element) return;
-    
-    // Dynamically import to avoid SSR issues
-    const html2canvas = (await import('html2canvas')).default;
-    const { jsPDF } = await import('jspdf');
-    
-    // 1. Force STRICT A6 PDF page dimensions for printer compatibility
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: [105, 148]
-    });
-    
-    // 2. Select individual bill pages to ensure pagination works flawlessly
-    const pages = element.querySelectorAll('.bill-page');
-    if (pages.length === 0) return;
 
-    for (let i = 0; i < pages.length; i++) {
-      if (i > 0) {
-        pdf.addPage([105, 148], 'portrait');
-      }
-      
-      const pageEl = pages[i] as HTMLElement;
-      
-      // 3. Render high-res crisp canvas
-      const canvas = await html2canvas(pageEl, {
-        scale: 4, 
-        windowWidth: 397,
-        useCORS: true,
-        backgroundColor: '#ffffff'
-      });
-      
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
-      
-      // 4. MAP PROPORTIONALLY (Do NOT stretch to 148mm if aspect ratio differs by 0.1mm)
-      const pdfWidth = 105;
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      
-      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-    }
-    
-    // 5. Output and Print
-    const pdfUrl = pdf.output('bloburl');
-    const printWindow = window.open(pdfUrl, '_blank');
-    if (printWindow) {
-      setSuccessBill(null);
-      setRequestId(crypto.randomUUID());
-    } else {
-      alert("Please allow pop-ups to print the bill.");
-    }
+    const origin = window.location.origin;
+
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow?.document;
+    if (!doc) return;
+
+    doc.open();
+    doc.write(`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Bill_${successBill?.billNumber || 'receipt'}</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; width: 105mm; height: 148mm; background: white; }
+  @page { size: 105mm 148mm; margin: 0; }
+  @media print {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .bill-page + .bill-page { page-break-before: always; break-before: page; }
+</style>
+</head>
+<body>
+${element.innerHTML.replace(/src="\//g, `src="${origin}/`).replace(/srcset="[^"]*"/g, '')}
+</body>
+</html>`);
+    doc.close();
+
+    const imgs = Array.from(doc.querySelectorAll('img'));
+    const loaded = imgs.map(img =>
+      img.complete ? Promise.resolve() : new Promise<void>(res => { img.onload = () => res(); img.onerror = () => res(); })
+    );
+
+    Promise.all(loaded).then(() => {
+      setTimeout(() => {
+        const cw = iframe.contentWindow;
+        if (cw) {
+          cw.addEventListener('afterprint', () => {
+            if (document.body.contains(iframe)) {
+              document.body.removeChild(iframe);
+            }
+            setSuccessBill(null);
+            setRequestId(crypto.randomUUID());
+          });
+          cw.focus();
+          cw.print();
+        }
+      }, 300);
+    });
   }
 
   const handleSearch = (query: string, rowIndex: number) => {
