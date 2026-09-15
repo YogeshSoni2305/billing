@@ -29,7 +29,9 @@ export default function DailySummary() {
       pagebreak:    { mode: 'css', before: '.bill-page + .bill-page' }
     };
 
-    html2pdf().set(opt).from(element).save();
+    html2pdf().set(opt).from(element).output('bloburl').then((pdfUrl: string) => {
+      window.open(pdfUrl, '_blank');
+    });
   }
 
 
