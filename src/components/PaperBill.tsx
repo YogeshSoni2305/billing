@@ -1,26 +1,34 @@
 import Image from 'next/image'
 
 export default function PaperBill({ billNumber, date, customerName, customerMobile, storeName = 'SAGAR ELECTRICALS', items, isMerchant }: any) {
-  // ─── GEOMETRY (all in px, A6 = 397 × 560 max) ──────────────────────────────
-  const PX = 10  // horizontal padding
-  const PY = 6   // vertical top + bottom padding
+  // ─── GEOMETRY (all in px, A6 container = 397 × 560, box-sizing: border-box) ─
+  // Inner area after padding: 377 × 548 px
+  const PX = 10   // horizontal padding each side
+  const PY = 6    // vertical padding top + bottom
 
   const HEADER_H   = 50   // logo + store header
   const META_H     = 14   // No. / Date row
   const CUSTOMER_H = 26   // M/s + Mobile
-  const TBL_HEAD_H = 16   // column labels
-  const TBL_FOOT_H = 22   // Total qty / Net amount
-  // NOTE ROW REMOVED — freed 16px redistributed to data rows
+  const TBL_HEAD_H = 16   // column labels row
+  const TBL_FOOT_H = 22   // totals row
 
-  const G1 = 3  // after header
-  const G2 = 2  // after meta
-  const G3 = 2  // after customer
+  const G1 = 3   // margin-bottom after header
+  const G2 = 2   // margin-bottom after meta
+  const G3 = 2   // margin-bottom after customer
 
   const MIN_ROWS = 17
-  const usedPx = PY + HEADER_H + G1 + META_H + G2 + CUSTOMER_H + G3
-               + TBL_HEAD_H + TBL_FOOT_H + PY
-  const availableForRows = 560 - usedPx
-  const ROW_H = Math.floor(availableForRows / MIN_ROWS) // ~25px — roomier rows
+
+  // ── EXACT border accounting ──────────────────────────────────────────────
+  // table outer wrapper: border 1px all sides → top(1) + bottom(1) = 2px
+  // TBL_HEAD: borderBottom 1px
+  // each data row except last: borderBottom 1px → (MIN_ROWS-1) px
+  // TBL_FOOT: borderTop 1px
+  const BORDER_PX = 2 + 1 + (MIN_ROWS - 1) + 1   // = 20px
+
+  const fixedPx = PY + HEADER_H + G1 + META_H + G2 + CUSTOMER_H + G3
+               + TBL_HEAD_H + BORDER_PX + TBL_FOOT_H + PY
+  const availableForRows = 560 - fixedPx          // exactly what's left for rows
+  const ROW_H = Math.floor(availableForRows / MIN_ROWS)  // 23px — fits with 2px leftover
 
   const displayItems = [...(items || [])]
   while (displayItems.length < MIN_ROWS) displayItems.push({ _empty: true })
@@ -56,7 +64,7 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
       width: 397,
       minWidth: 397,
       height: 560,
-      minHeight: 560,
+      // NO minHeight — let height: 560 be the strict ceiling, not a floor that expands
       background: '#fff',
       color: '#0f172a',
       fontFamily: FONT,
@@ -147,7 +155,8 @@ export default function PaperBill({ billNumber, date, customerName, customerMobi
       </div>
 
       {/* ── TABLE ──────────────────────────────────────────────────── */}
-      <div style={{ flexShrink: 0, border: '1px solid #e2e8f0' }}>
+      {/* flexShrink:0 ensures table never compresses above its computed height */}
+      <div style={{ flexShrink: 0, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
 
         {/* Table Header */}
         <div style={{
