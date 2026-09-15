@@ -19,6 +19,7 @@ export default function DailySummary() {
     if (!element) return;
 
     const html2pdf = (await import('html2pdf.js')).default;
+    const printJS = (await import('print-js')).default;
     
     const opt = {
       margin:       0,
@@ -30,12 +31,7 @@ export default function DailySummary() {
     };
 
     html2pdf().set(opt).from(element).output('bloburl').then((pdfUrl: string) => {
-      const win = window.open(pdfUrl, '_blank');
-      if (win) {
-        setViewingBill(null);
-      } else {
-        alert('Please allow pop-ups to print the bill.');
-      }
+      printJS({ printable: pdfUrl, type: 'pdf', showModal: false });
     });
   }
 

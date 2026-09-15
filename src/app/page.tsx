@@ -48,19 +48,16 @@ export default function NewBill() {
 
   useEffect(() => {
     getNextBillNumber().then(setNextBillNumber)
-    if (successBill) {
-      setTimeout(() => {
-        generatePDF()
-      }, 100)
-    }
+    // Removed auto-print and auto-reset to enhance user experience
   }, [successBill])
+
 
   const generatePDF = async () => {
     const element = document.getElementById('paper-bill-container');
     if (!element) return;
 
-    // Use exactly the Bill 22 html2pdf.js pipeline that produced perfect results
     const html2pdf = (await import('html2pdf.js')).default;
+    const printJS = (await import('print-js')).default;
     
     const opt = {
       margin:       0,
@@ -72,13 +69,8 @@ export default function NewBill() {
     };
 
     html2pdf().set(opt).from(element).output('bloburl').then((pdfUrl: string) => {
-      const win = window.open(pdfUrl, '_blank');
-      if (win) {
-        setSuccessBill(null);
-        setRequestId(crypto.randomUUID());
-      } else {
-        alert('Please allow pop-ups to print the bill.');
-      }
+      // Seamlessly print the PDF blob in the background without opening a new tab
+      printJS({ printable: pdfUrl, type: 'pdf', showModal: false });
     });
   }
 
