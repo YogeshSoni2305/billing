@@ -59,59 +59,27 @@ export default function NewBill() {
     const element = document.getElementById('paper-bill-container');
     if (!element) return;
 
-    const html2canvas = (await import('html2canvas')).default;
-    const { jsPDF } = await import('jspdf');
+    // Use exactly the Bill 22 html2pdf.js pipeline that produced perfect results
+    const html2pdf = (await import('html2pdf.js')).default;
+    
+    const opt = {
+      margin:       0,
+      filename:     `Invoice-${successBill?.billNumber || 'New'}.pdf`,
+      image:        { type: 'jpeg', quality: 1 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a6', orientation: 'portrait' },
+      pagebreak:    { mode: 'css', before: '.bill-page + .bill-page' }
+    };
 
-    // Select each bill-page separately so we can add them as individual PDF pages.
-    // This handles both Customer Copy and Merchant Copy correctly.
-    const pages = Array.from(element.querySelectorAll<HTMLElement>('.bill-page'));
-    if (pages.length === 0) return;
-
-    // Create the PDF with EXACT A6 MediaBox = [0 0 297.638 419.528] pt
-    // macOS print system maps this MediaBox to the named paper "A6",
-    // so the Canon LBP6030 XPS driver receives PageMediaSize: A6 in its print ticket.
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: [105, 148],   // exact A6 — no @page CSS hacks needed
+    html2pdf().set(opt).from(element).output('bloburl').then((pdfUrl: string) => {
+      const win = window.open(pdfUrl, '_blank');
+      if (win) {
+        setSuccessBill(null);
+        setRequestId(crypto.randomUUID());
+      } else {
+        alert('Please allow pop-ups to print the bill.');
+      }
     });
-
-    for (let i = 0; i < pages.length; i++) {
-      if (i > 0) pdf.addPage([105, 148], 'portrait');
-
-      // Capture at scale:4 with locked 397×560 viewport.
-      // Canvas will be 1588×2240 px. AR mismatch vs A6 = 0.075% (0.078mm — sub-pixel, invisible).
-      const canvas = await html2canvas(pages[i], {
-        scale: 4,
-        width: 397,        // lock to exact PaperBill container width — no viewport bleed
-        height: 560,       // lock to exact PaperBill container height
-        windowWidth: 397,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-      });
-
-      // Place image at exactly 0,0 covering the full 105×148mm page.
-      // jsPDF clips at the MediaBox boundary — no content is lost because
-      // our 560px height maps to 148.03mm, only 0.03mm over the 148mm boundary.
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
-      // Map proportionally: width locked to 105mm, height derived from canvas ratio.
-      // This guarantees ZERO aspect-ratio distortion — no horizontal or vertical stretch.
-      // The ~0.035mm height overage over 148mm clips invisibly at the PDF page boundary.
-      const imgH = (canvas.height / canvas.width) * 105;
-      pdf.addImage(imgData, 'JPEG', 0, 0, 105, imgH);
-    }
-
-    // Open as a real PDF blob in a new tab.
-    // macOS Preview / Chrome PDF viewer will read the MediaBox and send a named-A6 job
-    // to the Canon driver — exactly the same path as Bill 22.
-    const pdfUrl = pdf.output('bloburl');
-    const win = window.open(pdfUrl as unknown as string, '_blank');
-    if (win) {
-      setSuccessBill(null);
-      setRequestId(crypto.randomUUID());
-    } else {
-      alert('Please allow pop-ups to print the bill.');
-    }
   }
 
   const handleSearch = (query: string, rowIndex: number) => {

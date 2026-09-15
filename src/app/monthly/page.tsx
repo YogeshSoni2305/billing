@@ -18,42 +18,25 @@ export default function MonthlySummary() {
     const element = document.getElementById('modal-paper-bill-container');
     if (!element) return;
 
-    const html2canvas = (await import('html2canvas')).default;
-    const { jsPDF } = await import('jspdf');
+    const html2pdf = (await import('html2pdf.js')).default;
+    
+    const opt = {
+      margin:       0,
+      filename:     `Invoice-${viewingBill?.billNumber || 'New'}.pdf`,
+      image:        { type: 'jpeg', quality: 1 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a6', orientation: 'portrait' },
+      pagebreak:    { mode: 'css', before: '.bill-page + .bill-page' }
+    };
 
-    const pages = Array.from(element.querySelectorAll<HTMLElement>('.bill-page'));
-    if (pages.length === 0) return;
-
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: [105, 148],
+    html2pdf().set(opt).from(element).output('bloburl').then((pdfUrl: string) => {
+      const win = window.open(pdfUrl, '_blank');
+      if (win) {
+        setViewingBill(null);
+      } else {
+        alert('Please allow pop-ups to print the bill.');
+      }
     });
-
-    for (let i = 0; i < pages.length; i++) {
-      if (i > 0) pdf.addPage([105, 148], 'portrait');
-
-      const canvas = await html2canvas(pages[i], {
-        scale: 4,
-        width: 397,
-        height: 560,
-        windowWidth: 397,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-      });
-
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
-      const imgH = (canvas.height / canvas.width) * 105;
-      pdf.addImage(imgData, 'JPEG', 0, 0, 105, imgH);
-    }
-
-    const pdfUrl = pdf.output('bloburl');
-    const win = window.open(pdfUrl as unknown as string, '_blank');
-    if (win) {
-      setViewingBill(null);
-    } else {
-      alert('Please allow pop-ups to print the bill.');
-    }
   }
 
 
